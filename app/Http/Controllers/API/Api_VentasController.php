@@ -606,7 +606,7 @@ class Api_VentasController extends Controller
                     $oh_create = OH::create($oh);
                     $op_create = OP::create($op);
                 }
-                if ($sale->code == 'MEX' || $tvrepdom == 1) {
+                if ($sale->code == 'MEX' || ($tvrepdom == 1 && $incorporacion == 1)) {
                     if ($tvrepdom == 1 && $incorporacion == 1) {
                         $ciinfoenvio_db = CIINFOENVIO::create($ciinfoenvio);
                     } else {
