@@ -524,7 +524,7 @@ class Api_VentasController extends Controller
                     $data['error_info'] = $th;
                     return json_encode($data);
                 }
-            } else {
+            } else if ($sale->code == 'MEX') {
                 $contracts_envio = '';
                 $department = $this->eliminar_acentos($shipping_address->department);
                 $CIState = $this->get_CIState($department);
