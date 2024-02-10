@@ -512,7 +512,7 @@ class Api_VentasController extends Controller
                 $ciinfocomp_update = $ciinfocomp_response['ciinfocomp'];
             }
         }
-        if ($sale->code == 'MEX' || $tvrepdom == 1) {
+        if ($sale->code == 'MEX' || ($tvrepdom == 1 && $incorporacion == 1)) {
             if ($tvrepdom == 1 && $incorporacion == 1) {
                 $CIState['cistate'] = new stdClass();
                 $CIState['cistate']->CIState = '';
