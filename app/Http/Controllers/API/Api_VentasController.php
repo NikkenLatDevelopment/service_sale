@@ -538,6 +538,7 @@ class Api_VentasController extends Controller
             if ($ciinfoenvio_response['status'] != 200) {
                 $data['status'] = 316;
                 $data['error_info'] = $ciinfoenvio_response['error_info'];
+                $data['cinfo'] = $ciinfoenvio_response;
                 return json_encode($data);
             }
             $ciinfoenvio = $ciinfoenvio_response['ciinfoenvio'];
