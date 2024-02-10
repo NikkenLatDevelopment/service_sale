@@ -513,7 +513,7 @@ class Api_VentasController extends Controller
             }
         }
         if ($sale->code == 'MEX' || $tvrepdom == 1) {
-            if ($tvrepdom == 1) {
+            if ($tvrepdom == 1 && $incorporacion == 1) {
                 $CIState['cistate'] = new stdClass();
                 $CIState['cistate']->CIState = '';
                 try {
