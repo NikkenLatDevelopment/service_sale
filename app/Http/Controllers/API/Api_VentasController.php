@@ -350,7 +350,7 @@ class Api_VentasController extends Controller
         if ($sale->code == 'CHL') {
             $oh_response = $this->get_OrderHeader_chl($sale, $garantía, $shipping_address->adjusted, $user, $taxcodes[$sale->code], $warehouses[$sale->code], $autoship, $nikkenpoints, $bono, $user_bono, $qty, $incorporacion);
         } else {
-            $oh_response = $this->get_OrderHeader($sale, $garantía, $address_logbook, $user, $taxcodes, $warehouses, $autoship, $nikkenpoints, $bono, $user_bono, $tvrepdom);
+            $oh_response = $this->get_OrderHeader($sale, $garantía, $shipping_address->adjusted, $user, $taxcodes[$sale->code], $warehouses[$sale->code], $autoship, $nikkenpoints, $bono, $user_bono, $tvrepdom);
         }
         if ($stopper == 2) {
             return $oh_response;
