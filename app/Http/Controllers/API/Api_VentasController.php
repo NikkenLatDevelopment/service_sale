@@ -2445,21 +2445,43 @@ class Api_VentasController extends Controller
         return $data;
     }
 
-    public function get_ciinfoenvio($user, $address_logbook, $CIState, $bono, $user_bono)
+    public function get_ciinfoenvio($user, $address_logbook, $CIState, $bono, $user_bono, $tvrepdom, $contracts)
     {
-        //Sólo para México
         $data['status'] = 300;
         try {
-            $ciinfoenvio = [
-                'CardCode' => strval($user->sap_code),
-                'CICountry' => 'MEX',
-                'CIAddress' => trim($address_logbook->address),
-                'CIMunicipio' => trim($address_logbook->district),
-                'CICity' => trim($address_logbook->province),
-                'CIState' => $CIState,
-                'CICounty' => 'MEX',
-                'CIZipCode' => strval(trim($address_logbook->zip_code)),
-            ];
+            if ($tvrepdom == 1) {
+                $array = explode('|', $contracts->address);
+                if (isset($array[2])) {
+                    $address = trim($array[0]);
+                    $residency = trim($array[1]);
+                    $number_residency = trim($array[2]);
+                } else {
+                    $address = $contracts->address;
+                    $residency = '';
+                    $number_residency = '';
+                }
+                $ciinfoenvio = [
+                    'CardCode' => strval($contracts->code),
+                    'CICountry' => 'DOM',
+                    'CIAddress' => $address,
+                    'CIMunicipio' => $residency,
+                    'CICity' => $number_residency,
+                    'CICounty' => 'DOM',
+                    'CIZipCode' => '',
+                    'CIState' => '',
+                ];
+            } else {
+                $ciinfoenvio = [
+                    'CardCode' => strval($user->sap_code),
+                    'CICountry' => 'MEX',
+                    'CIAddress' => trim($address_logbook->address),
+                    'CIMunicipio' => trim($address_logbook->district),
+                    'CICity' => trim($address_logbook->province),
+                    'CIState' => $CIState,
+                    'CICounty' => 'MEX',
+                    'CIZipCode' => strval(trim($address_logbook->zip_code)),
+                ];
+            }
             if ($bono == 1) {
                 $ciinfoenvio_bono = [
                     'CardCode' => $user_bono->code,
