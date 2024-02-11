@@ -526,8 +526,7 @@ class Api_VentasController extends Controller
                 }
             } else if ($sale->code == 'MEX') {
                 $contracts_envio = '';
-                $department = $this->eliminar_acentos($shipping_address->department);
-                $CIState = $this->get_CIState($department);
+                $CIState = $this->get_CIState($shipping_address->department);
                 if ($CIState['status'] != 200) {
                     $data['status'] = 315;
                     $data['error_info'] = $CIState['error_info'];
