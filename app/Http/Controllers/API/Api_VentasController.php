@@ -2450,7 +2450,7 @@ class Api_VentasController extends Controller
         $data['status'] = 300;
         try {
             if ($tvrepdom == 1) {
-                $array = explode('|', $contracts->address);
+                $array = explode('|', $contracts->address_invoice);
                 if (isset($array[2])) {
                     $address = trim($array[0]);
                     $residency = trim($array[1]);
