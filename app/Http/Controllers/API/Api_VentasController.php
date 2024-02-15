@@ -2913,6 +2913,7 @@ class Api_VentasController extends Controller
 
     public function get_businesspartner_update($bplatam)
     {
+        $genders = ['Femenino' => 'F', 'Masculino' => 'M', 'femenino' => 'F', 'masculino' => 'M'];
         try {
             $businesspartner = [
                 'NumContract' => trim($bplatam->NumContract),
@@ -2934,7 +2935,7 @@ class Api_VentasController extends Controller
                 'CreateVista' => null,
                 'CreateMN' => null,
                 'SystemDate' => trim($bplatam->SystemDate),
-                'Genero' => trim($bplatam->Genero),
+                'Genero' => isset($genders[trim($bplatam->Genero)]) ? $genders[trim($bplatam->Genero)] : trim($bplatam->Genero),
             ];
         } catch (\Throwable $th) {
             $data['status'] = 300;
