@@ -1810,14 +1810,21 @@ class Api_VentasController extends Controller
         }
         try {
             if ($banco_search == '') {
-                $info_payments = PaymentAccounts::where('country', 4)
-                    ->where('payment_provider', $payment->payment_provider)
-                    ->where('payment_method', $payment->payment_method)
-                    ->where('installments', $payment->installments)
-                    ->first();
+                if ($payment->payment_provider == 'Paymentez nuvei') {
+                    $info_payments = PaymentAccounts::where('country', 4)
+                        ->where('payment_provider', trim($payment->payment_provider))
+                        ->first();
+                } else {
+                    $info_payments = PaymentAccounts::where('country', 4)
+                        ->where('payment_provider', $payment->payment_provider)
+                        ->where('payment_method', $payment->payment_method)
+                        ->where('installments', $payment->installments)
+                        ->first();
+                }
             } else {
                 $info_payments = PaymentAccounts::where('country', 4)
-                    ->where('detalle', $banco_search)
+                    ->where('payment_method', $banco_search)
+                    ->where('payment_provider', $payment->payment_provider)
                     ->first();
             }
         } catch (\Throwable $th) {
