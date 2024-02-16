@@ -1798,7 +1798,7 @@ class Api_VentasController extends Controller
     {
         $payment_account = [];
         $account_code = [];
-        $bancos = ['PRODUBANCO', 'BANCO GUAYAQUIL', 'BANCO DEL PACÍFICO', 'BANCO DEL PICHINCHA'];
+        $bancos = ['PRODUBANCO', 'BANCO GUAYAQUIL', 'BANCO DEL PACÍFICO', 'BANCO DEL PICHINCHA','BANCO PICHINCHA'];
         $banco_search = '';
         if ($payment->payment_provider == 'Institución Bancaria') {
             foreach ($bancos as $banco) {
