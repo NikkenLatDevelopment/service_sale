@@ -780,7 +780,7 @@ class Api_VentasController extends Controller
         $data['create_OL'] = $ol_create;
         $data['create_OP'] = $op_create;
         $data['ciinfo_db'] = isset($ciinfo_db) ? $ciinfo_db : '';
-        $data['ciinfocomp_db'] = isset($ciinfocomp_db) ? $ciinfocomp : '';
+        $data['ciinfocomp_db'] = isset($ciinfocomp_db) ? $ciinfocomp_db : '';
         $data['ciinfoenvio_db'] = isset($ciinfoenvio_db) ? $ciinfoenvio_db : '';
         $data['sales_update'] = isset($sales_update) ? $sales_update : '';
 
