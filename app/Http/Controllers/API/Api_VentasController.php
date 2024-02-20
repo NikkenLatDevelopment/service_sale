@@ -2374,7 +2374,7 @@ class Api_VentasController extends Controller
                 $ciinfocomp = [
                     'CICity' =>  'BOGOTA',
                     'CIMunicipio' => 'BOGOTA',
-                    'CIState' =>  'CMX',
+                    'CIState' =>  'CN',
                     'CICounty' => 'COL',
                 ];
                 break;
