@@ -2720,13 +2720,7 @@ class Api_VentasController extends Controller
                     'Descto' => 0,
                     'Linetotal' => 0,
                     'LineAfVat' => 0,
-                    'ExtraTax' => 0,
-                    'Estrategia' => '',
-                    'Garantia' => '',
-                    'Fecha_Estrategia' => '',
-                    'RetailPrice' => '',
-                    'WholeDisc' => '',
-                    'WholePrice' => ''
+                    'ExtraTax' => 0
                 ];
             }
             if ($bono == 1) {
