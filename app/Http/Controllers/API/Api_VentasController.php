@@ -270,15 +270,15 @@ class Api_VentasController extends Controller
             $incorporacion = $request->incorporacion;
         }
         $inactivo = 0;
-        if (isset($bplatam_2->CardCode)) {
-            $inactivo = $bplatam_2->FrozenFor == 'Y' ? 1 : 0;
-        }
-        if ($inactivo == 1) {
-            $data['status'] = 321;
-            $data['error'] = 'Inactive User';
-            $data['error_info'] = 'El usuario se encuentra inactivo. WEB-' . $sale->code . '-' . $request->id;
-            return json_encode($data);
-        }
+        // if (isset($bplatam_2->CardCode)) {
+        //     $inactivo = $bplatam_2->FrozenFor == 'Y' ? 1 : 0;
+        // }
+        // if ($inactivo == 1) {
+        //     $data['status'] = 321;
+        //     $data['error'] = 'Inactive User';
+        //     $data['error_info'] = 'El usuario se encuentra inactivo. WEB-' . $sale->code . '-' . $request->id;
+        //     return json_encode($data);
+        // }
         //validar si es nacional o internacional
         $nacional = $user->country_id == $sale->country_id ? 1 : 0;
         $internacional = $incorporacion == 0 && $nacional == 0 ? 1 : 0;
