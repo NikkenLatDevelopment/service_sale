@@ -776,9 +776,9 @@ class Api_VentasController extends Controller
             return json_encode($data);
         }
 
-        $data['create_OH'] = $oh_create;
-        $data['create_OL'] = $ol_create;
-        $data['create_OP'] = $op_create;
+        $data['oh'] = $oh_create;
+        $data['ol'] = $ol_create;
+        $data['op'] = $op_create;
         if($sale->code != 'CHL'){
             $data['ciinfo_db'] = isset($ciinfo_db) ? $ciinfo_db : '';
             $data['ciinfocomp_db'] = isset($ciinfocomp_db) ? $ciinfocomp_db : '';
