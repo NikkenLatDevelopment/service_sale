@@ -1579,10 +1579,10 @@ class Api_VentasController extends Controller
                             'PaymentCreditCardNo' => '1234',
                             'PaymentValidUntil' => $fecha_until,
                             'PaymentAmountDue' => $payment->payment_amount,
-                            'PaymentVoucherNum' => substr($payment->confirmation_code,0,12),
+                            'PaymentVoucherNum' => substr($payment->confirmation_code,0,11),
                             'PaymentMethodCode' => '1',
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => substr($payment->confirmation_code,0,12)
+                            'PaymentTransferReference' => substr($payment->confirmation_code,0,11)
                         ];
                         if ($bono == 1) {
                             $op = [
