@@ -786,7 +786,7 @@ class Api_VentasController extends Controller
         }else{
             try {
                 $conection = DB::connection('170');
-                $response = $conection->select("exec NIKKENREG_STG.dbo.sp_ins_orderNumIntoMQ 'WEB-$sale->code-$sale->id';");
+                $response = $conection->select("SET NOCOUNT ON; EXEC NIKKENREG_STG.dbo.sp_ins_orderNumIntoMQ 'WEB-$sale->code-$sale->id';");
                 DB::disconnect('170');
             } catch (\Throwable $th) {
                 $data['error'] = $th;
