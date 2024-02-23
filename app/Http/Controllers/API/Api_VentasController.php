@@ -783,6 +783,16 @@ class Api_VentasController extends Controller
             $data['ciinfo_db'] = isset($ciinfo_db) ? $ciinfo_db : '';
             $data['ciinfocomp_db'] = isset($ciinfocomp_db) ? $ciinfocomp_db : '';
             $data['ciinfoenvio_db'] = isset($ciinfoenvio_db) ? $ciinfoenvio_db : '';
+        }else{
+            try {
+                $conection = DB::connection('170');
+                $response['data'] = $conection->select("exec NIKKEN_REG_STG.dbo.sp_ins_orderNumIntoMQ 'WEB-$sale->code-$sale->id';");
+                DB::disconnect('170');
+            } catch (\Throwable $th) {
+                $data['error'] = $th;
+                $data['status'] = 201;
+                return json_encode($data);
+            }
         }
         // $data['sales_update'] = isset($sales_update) ? $sales_update : '';
 
