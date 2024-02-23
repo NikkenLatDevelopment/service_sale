@@ -217,7 +217,7 @@ class Api_VentasController extends Controller
                                 }
                             } else {
                                 $data['status'] = 308;
-                                $data['error_info'] = 'No hay existe usuario para la venta ó esta inactivo. - ' . $request->id;
+                                $data['error_info'] = 'No hay existe usuario para la venta ó esta inactivo. - WEB-' . $sale->code . '-' . $request->id;
                                 return json_encode($data);
                             }
                         } catch (\Throwable $th) {
@@ -228,7 +228,7 @@ class Api_VentasController extends Controller
                     }
                 } else {
                     $data['status'] = 308;
-                    $data['error_info'] = 'No hay existe usuario para la venta. - ' . $request->id;
+                    $data['error_info'] = 'No hay existe usuario para la venta. - WEB-' . $sale->code . '-' . $request->id;
                     return json_encode($data);
                 }
             } catch (\Throwable $th) {
@@ -276,7 +276,7 @@ class Api_VentasController extends Controller
         if ($inactivo == 1) {
             $data['status'] = 321;
             $data['error'] = 'Inactive User';
-            $data['error_info'] = 'El usuario se encuentra inactivo.';
+            $data['error_info'] = 'El usuario se encuentra inactivo. WEB-' . $sale->code . '-' . $request->id;
             return json_encode($data);
         }
         //validar si es nacional o internacional
@@ -779,11 +779,11 @@ class Api_VentasController extends Controller
         $data['oh'] = $oh_create;
         $data['ol'] = $ol_create;
         $data['op'] = $op_create;
-        if($sale->code != 'CHL'){
+        if ($sale->code != 'CHL') {
             $data['ciinfo_db'] = isset($ciinfo_db) ? $ciinfo_db : '';
             $data['ciinfocomp_db'] = isset($ciinfocomp_db) ? $ciinfocomp_db : '';
             $data['ciinfoenvio_db'] = isset($ciinfoenvio_db) ? $ciinfoenvio_db : '';
-        }else{
+        } else {
             try {
                 $conection = DB::connection('170');
                 $response = $conection->select("SET NOCOUNT ON; EXEC NIKKENREG_STG.dbo.sp_ins_orderNumIntoMQ 'WEB-$sale->code-$sale->id';");
@@ -1590,10 +1590,10 @@ class Api_VentasController extends Controller
                             'PaymentCreditCardNo' => '1234',
                             'PaymentValidUntil' => $fecha_until,
                             'PaymentAmountDue' => $payment->payment_amount,
-                            'PaymentVoucherNum' => substr($payment->confirmation_code,0,11),
+                            'PaymentVoucherNum' => substr($payment->confirmation_code, 0, 11),
                             'PaymentMethodCode' => '1',
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => substr($payment->confirmation_code,0,11)
+                            'PaymentTransferReference' => substr($payment->confirmation_code, 0, 11)
                         ];
                         if ($bono == 1) {
                             $op = [
