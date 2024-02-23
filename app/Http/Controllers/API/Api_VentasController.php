@@ -494,7 +494,7 @@ class Api_VentasController extends Controller
                 }
                 $businesspartnertaxinfo_update = $businesspartnertaxinfo_response['businesspartnertaxinfo_update'];
             } else {
-                $ciinfo_response = $this->get_ciinfo_update($sale, $user);
+                $ciinfo_response = $this->get_ciinfo_update($sale, $bplatam_2);
                 // return $ciinfo;
                 if ($ciinfo_response['status'] != 200) {
                     $data['status'] = 311;
@@ -2302,14 +2302,15 @@ class Api_VentasController extends Controller
         return $data;
     }
 
-    public function get_ciinfo_update($sale, $user)
+    public function get_ciinfo_update($sale, $bplatam)
     {
         $data['status'] = 300;
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         switch ($sale->country_id) {
             case 1:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
+                    'FederalTaxID' => '55555555'
                 ];
                 break;
             case 2:
@@ -2321,26 +2322,31 @@ class Api_VentasController extends Controller
             case 3:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
+                    'FederalTaxID' => '55555555'
                 ];
                 break;
             case 4:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
+                    'FederalTaxID' => '55555555'
                 ];
                 break;
             case 5:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
+                    'FederalTaxID' => '55555555'
                 ];
                 break;
             case 6:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
+                    'FederalTaxID' => '55555555'
                 ];
                 break;
             case 7:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
+                    'FederalTaxID' => '55555555'
                 ];
                 break;
             case 8:
@@ -2362,7 +2368,7 @@ class Api_VentasController extends Controller
     public function get_ciinfocomp_update($sale)
     {
         $data['status'] = 300;
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         //para agregar datos x pais en dni_route
         $dni_route = '';
         $regimen = '';
@@ -2429,15 +2435,11 @@ class Api_VentasController extends Controller
                 break;
             case 8:
                 $ciinfocomp = [
-                    'DNIType' => '',
-                    'DNINumber' => '',
-                    'DNIRoute' => '',
-                    'Regimen' => '',
                     'CICity' =>  '031',
                     'CIMunicipio' => '196',
                     'CIState' =>  'HER',
                     'CICounty' => 'CRI',
-                    'CIZipCode' =>  ''
+                    'Identificacion' => '02'
                 ];
                 break;
             default:
@@ -2935,6 +2937,7 @@ class Api_VentasController extends Controller
                 'CreateSAP' => null,
                 'CreateVista' => null,
                 'CreateMN' => null,
+                'Giro_CI' => 'Sin Actividad',
                 'SystemDate' => trim($bplatam->SystemDate),
                 'Genero' => isset($genders[trim($bplatam->Genero)]) ? $genders[trim($bplatam->Genero)] : trim($bplatam->Genero),
             ];
@@ -2996,14 +2999,59 @@ class Api_VentasController extends Controller
         $utc_timezone = new DateTimeZone("America/Mexico_City");
         $now = new DateTime("now", $utc_timezone);
         try {
+            switch ($bplatam->CardCountry) {
+                case 'COL':
+                    $CardBlock = 'BOGOTA';
+                    $CardCity = 'BOGOTA';
+                    $CardStateId = 'CN';
+                    break;
+                case 'MEX':
+                    $CardBlock = 'Benito Juárez';
+                    $CardCity = 'Benito Juárez';
+                    $CardStateId = 'CMX';
+                    break;
+                case 'PER':
+                    $CardBlock = 'Lima';
+                    $CardCity = 'Miraflores';
+                    $CardStateId = '15';
+                    break;
+                case 'ECU':
+                    $CardBlock = 'Guayaquil';
+                    $CardCity = 'Guayaquil';
+                    $CardStateId = 'GU';
+                    break;
+                case 'PAN':
+                    $CardBlock = 'Panamá';
+                    $CardCity = 'Panamá';
+                    $CardStateId = 'PN';
+                    break;
+                case 'GTM':
+                    $CardBlock = 'Guatemala';
+                    $CardCity = 'Guatemala';
+                    $CardStateId = 'GU';
+                    break;
+                case 'SLV':
+                    $CardBlock = 'San Salvador';
+                    $CardCity = 'San Salvador';
+                    $CardStateId = 'SS';
+                    break;
+                case 'CRI':
+                    $CardBlock = '031';
+                    $CardCity = '196';
+                    $CardStateId = 'HER';
+                    break;
+                default:
+                    $ciinfocomp = [];
+                    break;
+            }
             $businesspartner = [
                 'CardCode' => $bplatam->CardCode,
                 'CardCountry' => $bplatam->CardCountry,
                 'OrderCountry' => 'CHL',
                 'CardAddress' => trim($bplatam->CardAddress),
-                'CardBlock' => trim($bplatam->CardBlock),
-                'CardCity' => trim($bplatam->CardCity),
-                'CardStateId' => trim($bplatam->CardStateId),
+                'CardBlock' => $CardBlock,
+                'CardCity' => $CardCity,
+                'CardStateId' => $CardStateId,
                 'CardZipCode' => trim($bplatam->CardZipCode),
                 'AdresType' => trim($bplatam->AdresType),
                 'SystemDate' => $now->format('Y-m-d H:i:s'),
@@ -3074,7 +3122,7 @@ class Api_VentasController extends Controller
                 'IdRegimen' => 'TPN',
                 'FederalTaxId' => trim($bplatam->FederalTaxId),
                 'CardIdCode' => '',
-                'CardIdnum' => 'RUT',
+                'CardIdnum' => '',
                 'CreateSAP' => null,
                 'SystemDate' => $fecha_actual->format('Y-m-d H:i:s'),
             ];
