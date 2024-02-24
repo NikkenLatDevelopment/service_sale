@@ -791,8 +791,6 @@ class Api_VentasController extends Controller
             } catch (\Throwable $th) {
                 $data['error'] = $th;
                 $data['response'] = $response;
-                $data['status'] = 201;
-                return json_encode($data);
             }
         }
         // $data['sales_update'] = isset($sales_update) ? $sales_update : '';
