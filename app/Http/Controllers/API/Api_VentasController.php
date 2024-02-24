@@ -790,7 +790,6 @@ class Api_VentasController extends Controller
                 DB::disconnect('170');
             } catch (\Throwable $th) {
                 $data['error'] = $th;
-                $data['response'] = $response;
             }
         }
         // $data['sales_update'] = isset($sales_update) ? $sales_update : '';
