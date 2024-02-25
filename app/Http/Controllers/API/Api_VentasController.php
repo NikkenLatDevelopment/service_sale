@@ -2322,49 +2322,73 @@ class Api_VentasController extends Controller
             case 1:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
-                    'FederalTaxID' => '55555555'
+                    'FederalTaxID' => '55555555',
+                    'CreateSAP' => null,
+                    'CreateVista' => null,
+                    'CreateMN' => null
                 ];
                 break;
             case 2:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
-                    'FederalTaxID' => 'XAXX010101000'
+                    'FederalTaxID' => 'XAXX010101000',
+                    'CreateSAP' => null,
+                    'CreateVista' => null,
+                    'CreateMN' => null
                 ];
                 break;
             case 3:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
-                    'FederalTaxID' => '55555555'
+                    'FederalTaxID' => '55555555',
+                    'CreateSAP' => null,
+                    'CreateVista' => null,
+                    'CreateMN' => null
                 ];
                 break;
             case 4:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
-                    'FederalTaxID' => '55555555'
+                    'FederalTaxID' => '55555555',
+                    'CreateSAP' => null,
+                    'CreateVista' => null,
+                    'CreateMN' => null
                 ];
                 break;
             case 5:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
-                    'FederalTaxID' => '55555555'
+                    'FederalTaxID' => '55555555',
+                    'CreateSAP' => null,
+                    'CreateVista' => null,
+                    'CreateMN' => null
                 ];
                 break;
             case 6:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
-                    'FederalTaxID' => '55555555'
+                    'FederalTaxID' => '55555555',
+                    'CreateSAP' => null,
+                    'CreateVista' => null,
+                    'CreateMN' => null
                 ];
                 break;
             case 7:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
-                    'FederalTaxID' => '55555555'
+                    'FederalTaxID' => '55555555',
+                    'CreateSAP' => null,
+                    'CreateVista' => null,
+                    'CreateMN' => null
                 ];
                 break;
             case 8:
                 $ciinfo = [
                     'Pais_Intrnal' => $sale->code,
-                    'FederalTaxID' => '55555555'
+                    'FederalTaxID' => '55555555',
+                    'CreateSAP' => null,
+                    'CreateVista' => null,
+                    'CreateMN' => null
                 ];
                 break;
             default:
@@ -2394,6 +2418,10 @@ class Api_VentasController extends Controller
                     'CIMunicipio' => 'BOGOTA',
                     'CIState' =>  'CN',
                     'CICounty' => 'COL',
+                    'BankCode' => '',
+                    'AccountType' => '',
+                    'AccountNumber' => ''
+
                 ];
                 break;
 
@@ -2403,6 +2431,9 @@ class Api_VentasController extends Controller
                     'CIMunicipio' => 'Benito Juárez',
                     'CIState' =>  'CMX',
                     'CICounty' => 'MEX',
+                    'BankCode' => '',
+                    'AccountType' => '',
+                    'AccountNumber' => ''
                 ];
                 break;
             case 3:
@@ -2411,6 +2442,9 @@ class Api_VentasController extends Controller
                     'CIMunicipio' => 'Miraflores',
                     'CIState' =>  '15',
                     'CICounty' => 'PER',
+                    'BankCode' => '',
+                    'AccountType' => '',
+                    'AccountNumber' => ''
                 ];
                 break;
             case 4:
@@ -2419,6 +2453,9 @@ class Api_VentasController extends Controller
                     'CIMunicipio' => 'Guayaquil',
                     'CIState' =>  'GU',
                     'CICounty' => 'ECU',
+                    'BankCode' => '',
+                    'AccountType' => '',
+                    'AccountNumber' => ''
                 ];
                 break;
             case 5:
@@ -2427,6 +2464,9 @@ class Api_VentasController extends Controller
                     'CIMunicipio' => 'Panamá',
                     'CIState' =>  'PN',
                     'CICounty' => 'PAN',
+                    'BankCode' => '',
+                    'AccountType' => '',
+                    'AccountNumber' => ''
                 ];
                 break;
             case 6:
@@ -2435,6 +2475,9 @@ class Api_VentasController extends Controller
                     'CIMunicipio' => 'Guatemala',
                     'CIState' =>  'GU',
                     'CICounty' => 'GTM',
+                    'BankCode' => '',
+                    'AccountType' => '',
+                    'AccountNumber' => ''
                 ];
                 break;
             case 7:
@@ -2443,6 +2486,9 @@ class Api_VentasController extends Controller
                     'CIMunicipio' => 'San Salvador',
                     'CIState' =>  'SS',
                     'CICounty' => 'SLV',
+                    'BankCode' => '',
+                    'AccountType' => '',
+                    'AccountNumber' => ''
                 ];
                 break;
             case 8:
@@ -2451,7 +2497,10 @@ class Api_VentasController extends Controller
                     'CIMunicipio' => '196',
                     'CIState' =>  'HER',
                     'CICounty' => 'CRI',
-                    'Identificacion' => '02'
+                    'Identificacion' => '02',
+                    'BankCode' => '',
+                    'AccountType' => '',
+                    'AccountNumber' => ''
                 ];
                 break;
             default:
