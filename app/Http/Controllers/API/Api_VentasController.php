@@ -671,7 +671,9 @@ class Api_VentasController extends Controller
                     $data['op_bono_create'] = OP::create($op_bono);
                     $data['ciinfo_bono_create'] = CIINFO::create($ciinfo_bono);
                     $data['ciinfocomp_bono_create'] = CIINFOCOMP::create($ciinfocomp_bono);
-                    $data['ciinfoenvio_bono_create'] = CIINFOENVIO::create($ciinfoenvio_bono);
+                    if($sale->code == 'MEX'){
+                        $data['ciinfoenvio_bono_create'] = CIINFOENVIO::create($ciinfoenvio_bono);
+                    }
                 }
                 $data['contracts_bono'] = Contracts::where('code', $user_bono->code)->limit(1)->update(['status' => 1, 'payment' => '55' . $sale->id]);
                 $data['control_ci_bono'] = control_ci::where('codigo', $user_bono->code)->limit(1)->update(['estatus' => 1, 'b4' => 7]);
