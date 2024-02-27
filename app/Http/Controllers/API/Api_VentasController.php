@@ -1155,7 +1155,7 @@ class Api_VentasController extends Controller
                     'Quantity' => 1,
                     'UnitPrice' => $sale->code == 'COL' ? 0.01 : 0,
                     'U_Descto' => 0,
-                    'PriceAfVat' => $tvrepdom == 1 ? 0 :  0.1,
+                    'PriceAfVat' => $tvrepdom == 1 ? 0 : 0,
                     'TaxCode' =>  $tvrepdom == 1 ? trim($taxcodes->SalesExeTaxCode) : $taxcodes->SalesTaxCode,
                     'U_ItemType' => 'Venta',
                     'WarehouseCode' => $warehouses->SalesWhsCode,
