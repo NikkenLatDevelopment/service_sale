@@ -631,7 +631,7 @@ class Api_VentasController extends Controller
                     $ciinfo_db = CIINFO::create($ciinfo);
                     $ciinfocomp_db = CIINFOCOMP::create($ciinfocomp);
                     $data['contracts_update'] = Contracts::where('code', $user->sap_code)->limit(1)->update(['status' => 1, 'payment' => $sale->id]);
-                    $data['control_ci_update'] = Control_ci::where('codigo', $user->sap_code)->limit(1)->update(['estatus' => 1, 'b4' => 7, 'b9' => 4]);
+                    $data['control_ci_update'] = Control_ci::where('codigo', $user->sap_code)->limit(1)->update(['estatus' => 1, 'b4' => 7, 'b9' => 0]);
                 }
             }
             if ($internacional == 1) {
@@ -681,7 +681,7 @@ class Api_VentasController extends Controller
                     }
                 }
                 $data['contracts_bono'] = Contracts::where('code', $user_bono->code)->limit(1)->update(['status' => 1, 'payment' => '55' . $sale->id]);
-                $data['control_ci_bono'] = control_ci::where('codigo', $user_bono->code)->limit(1)->update(['estatus' => 1, 'b4' => 7, 'b9' => 4]);
+                $data['control_ci_bono'] = control_ci::where('codigo', $user_bono->code)->limit(1)->update(['estatus' => 1, 'b4' => 7, 'b9' => 0]);
             }
             // $sales_update = sales_tv::where('id', strval($sale->id))
             //     ->limit(1)
