@@ -76,7 +76,7 @@ class Api_VentasController extends Controller
         }
         //creacion de objeto que guarda la información
         $info = new stdClass();
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         $taxcodes = [];
         $taxcodes = $this->get_taxcodes();
         // return $taxcodes;
@@ -276,7 +276,7 @@ class Api_VentasController extends Controller
         }
         $inactivo = 0;
         if (isset($bplatam_2->CardCode)) { //Ajuste debido a que sucito un caso que en sap estaba activo pero en bplatam no por lo que se la prioridad a SAP.
-            if(empty($bplatam) && $bplatam_2->FrozenFor == 'Y'){
+            if (empty($bplatam) && $bplatam_2->FrozenFor == 'Y') {
                 $inactivo = 1;
             }
         }
@@ -815,7 +815,7 @@ class Api_VentasController extends Controller
             $timeCaching,
             static function () {
                 $taxcode = [];
-                $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+                $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
                 try {
                     $response =  Taxcodes::all();
                 } catch (\Throwable $th) {
@@ -831,25 +831,25 @@ class Api_VentasController extends Controller
 
     public function get_warehouses()
     {
-        // $key = sprintf('getWHs');
-        // $timeCaching = 21600; #in seconds 21600 = 6 horas        
-        // return cache()->remember(
-        //     $key,
-        //     $timeCaching,
-        //     static function () {
-        $warehouse = [];
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
-        try {
-            $response =  Warehouses::all();
-        } catch (\Throwable $th) {
-            return 0;
-        }
-        foreach ($response as $war) {
-            $warehouse[$countrys[trim($war->idcountry)]] = $war;
-        }
-        return $warehouse;
-        //     }
-        // );
+        $key = sprintf('getWHs');
+        $timeCaching = 21600; #in seconds 21600 = 6 horas        
+        return cache()->remember(
+            $key,
+            $timeCaching,
+            static function () {
+                $warehouse = [];
+                $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
+                try {
+                    $response =  Warehouses::all();
+                } catch (\Throwable $th) {
+                    return 0;
+                }
+                foreach ($response as $war) {
+                    $warehouse[$countrys[trim($war->idcountry)]] = $war;
+                }
+                return $warehouse;
+            }
+        );
     }
 
     public function get_CIState($department)
@@ -891,7 +891,7 @@ class Api_VentasController extends Controller
 
     public function get_OrderHeader($sale, $garantía, $address_logbook, $user, $taxcodes, $warehouses, $autoship, $nikkenpoints, $bono, $user_bono, $tvrepdom)
     {
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         $docdate  = new DateTime($sale->approval_date);
         $createdate = new DateTime($sale->created_at);
         $U_Precio = $user->client_type == 'CI' ? 'S' : 'C';
@@ -2053,7 +2053,7 @@ class Api_VentasController extends Controller
     public function get_ciinfo($sale, $incorporacion, $contracts, $bono, $user_bono)
     {
         $data['status'] = 300;
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         if (!isset($contracts->code)) {
             $data['error_info'] = 'No existe registro en contracts del CI';
             return $data;
@@ -2153,7 +2153,7 @@ class Api_VentasController extends Controller
     public function get_ciinfocomp($contracts, $bono, $user_bono, $tvrepdom)
     {
         $data['status'] = 300;
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         //para agregar datos x pais en dni_route
         $dni_route = '';
         $regimen = '';
@@ -2608,7 +2608,7 @@ class Api_VentasController extends Controller
 
     public function get_OrderHeader_chl($sale, $garantía, $address_logbook, $user, $taxcodes, $warehouses, $autoship, $nikkenpoints, $bono, $user_bono, $qty, $incorporacion)
     {
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         $docdate  = new DateTime($sale->approval_date);
         $createdate = new DateTime($sale->created_at);
         $updatedate = new DateTime($sale->updated_at);
@@ -2910,7 +2910,7 @@ class Api_VentasController extends Controller
             $data['error_info'] = 'No existe registro en contracts del CI';
             return $data;
         }
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         // $date_actual = ;
         $utc_timezone = new DateTimeZone("America/Mexico_City");
         $date_actual = new DateTime("now", $utc_timezone);
@@ -3044,7 +3044,7 @@ class Api_VentasController extends Controller
 
     public function get_businesspartneraddress($contracts, $bono, $user_bono)
     {
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         $utc_timezone = new DateTimeZone("America/Mexico_City");
         $fecha_actual = new DateTime("now", $utc_timezone);
         try {
@@ -3159,7 +3159,7 @@ class Api_VentasController extends Controller
 
     public function get_businesspartnertaxinfo($contracts, $bono, $user_bono)
     {
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         $utc_timezone = new DateTimeZone("America/Mexico_City");
         $fecha_actual = new DateTime("now", $utc_timezone);
         try {
@@ -3229,7 +3229,7 @@ class Api_VentasController extends Controller
 
     public function get_businesspartneraccinfo($contracts, $bono, $user_bono)
     {
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         $utc_timezone = new DateTimeZone("America/Mexico_City");
         $fecha_actual = new DateTime("now", $utc_timezone);
         try {
@@ -3268,7 +3268,7 @@ class Api_VentasController extends Controller
 
     public function get_businesspartneraccinfo_update($bplatam)
     {
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
         $utc_timezone = new DateTimeZone("America/Mexico_City");
         $fecha_actual = new DateTime("now", $utc_timezone);
         try {
@@ -3319,7 +3319,7 @@ class Api_VentasController extends Controller
             $timeCaching,
             function () {
                 $taxcode = [];
-                $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'tst', 'CHL'];
+                $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
                 try {
                     $response =  Products_Warranty::all();
                 } catch (\Throwable $th) {
