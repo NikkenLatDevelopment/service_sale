@@ -118,11 +118,11 @@ class Api_VentasController extends Controller
         }
         // return $sale;
 
-        if ($sale->code == 'PAN') {
-            $data['status'] = 300;
-            $data['error_info'] = 'Detendio a Petición - WEB-COL-' . $request->id;
-            return json_encode($data);
-        }
+        // if ($sale->code == 'PAN') {
+        //     $data['status'] = 300;
+        //     $data['error_info'] = 'Detendio a Petición - WEB-COL-' . $request->id;
+        //     return json_encode($data);
+        // }
         //validar alcancia
         //se valida que sea una venta padre
         // try {
@@ -157,7 +157,14 @@ class Api_VentasController extends Controller
             return json_encode($data);
         }
         // return $payment->detalle;
+        if ($sale->code == 'PAN') {
+            if($payment->payment_provider == 'Institución Bancaria'){
+                $data['status'] = 300;
+                $data['error_info'] = 'Detendio a Petición - WEB-COL-' . $request->id;
+                return json_encode($data);
+            }
 
+        }
         //Obtener Lines
         try {
             $products = sales_products::where('sale_id', trim($request->id))->get();
