@@ -158,12 +158,11 @@ class Api_VentasController extends Controller
         }
         // return $payment->detalle;
         if ($sale->code == 'PAN') {
-            if($payment->payment_provider == 'Institución Bancaria'){
+            if ($payment->payment_provider == 'Institución Bancaria') {
                 $data['status'] = 300;
                 $data['error_info'] = 'Detendio a Petición - WEB-COL-' . $request->id;
                 return json_encode($data);
             }
-
         }
         //Obtener Lines
         try {
@@ -2167,6 +2166,7 @@ class Api_VentasController extends Controller
         $dni_type = '';
         $dni_number = '';
         $number_account = '';
+        $reg_per = ['0' => 'PJ', '1' => 'PN', '2' => 'PNR'];
         switch (intval($contracts->country)) {
             case 1:
                 $dni_number = $contracts->number_document;
@@ -2177,6 +2177,7 @@ class Api_VentasController extends Controller
                 $regimen = $contracts->type_incorporate == 0 ? 'TPM' : 'TPF';
                 break;
             case 3:
+                $regimen = $reg_per[$contracts->type_incorporate];
                 if ($contracts->bank_code == 46) {
                     $number_account = trim($contracts->number_account);
                 } else {
@@ -2279,6 +2280,7 @@ class Api_VentasController extends Controller
                         $regimen = $user_bono->type_incorporate == 0 ? 'TPM' : 'TPF';
                         break;
                     case 3:
+                        $regimen = $reg_per[$user_bono->type_incorporate];
                         if ($user_bono->bank_code == 46) {
                             $number_account = trim($user_bono->number_account);
                         } else {
