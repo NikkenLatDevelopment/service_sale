@@ -2261,9 +2261,23 @@ class Api_VentasController extends Controller
             }
             if ($bono == 1) {
                 switch (intval($user_bono->country)) {
+                    case 1:
+                        $dni_number = $user_bono->number_document;
+                        $number_account = $user_bono->number_account;
+                        break;
                     case 2:
                         $dni_route = $user_bono->regimen;
                         $regimen = $user_bono->type_incorporate == 0 ? 'TPM' : 'TPF';
+                        break;
+                    case 3:
+                        if ($user_bono->bank_code == 46) {
+                            $number_account = trim($user_bono->number_account);
+                        } else {
+                            $number_account = trim($user_bono->number_clabe);
+                        }
+                        break;
+                    case 4:
+                        $number_account = trim($user_bono->number_account);
                         break;
                     case 5:
                         $dni_route = $user_bono->verify_digit;
@@ -2271,6 +2285,15 @@ class Api_VentasController extends Controller
                         $regimen = $user_bono->type_incorporate == 0 ? 'RUC' : 'SIN RUC';
                         $dni_number = $user_bono->number_document;
                         $number_account = $user_bono->number_account;
+                        break;
+                    case 6:
+                        $number_account = trim($user_bono->number_account);
+                        break;
+                    case 7:
+                        $number_account = trim($user_bono->number_account);
+                        break;
+                    case 8:
+                        $number_account = trim($user_bono->number_account);
                         break;
                     default:
                         $dni_route = '';
