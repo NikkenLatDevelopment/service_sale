@@ -160,7 +160,7 @@ class Api_VentasController extends Controller
         if ($sale->code == 'PAN') {
             if ($payment->payment_provider == 'Institución Bancaria') {
                 $data['status'] = 300;
-                $data['error_info'] = 'Detendio a Petición - WEB-COL-' . $request->id;
+                $data['error_info'] = 'Detendio a Petición - WEB-' . $sale->code . '-' . $request->id;
                 return json_encode($data);
             }
         }
