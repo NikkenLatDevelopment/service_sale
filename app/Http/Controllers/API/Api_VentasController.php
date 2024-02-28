@@ -1453,7 +1453,7 @@ class Api_VentasController extends Controller
                             'PaymentTransferReference' => $payment->confirmation_code
                         ];
                         if ($bono == 1) {
-                            $op = [
+                            $op_bono = [
                                 'DocEntry' => '55' . trim($sale->id),
                                 'NumAtCard' => trim($NumAtCard) . '_B',
                                 'PaymentType' => 'TP',
