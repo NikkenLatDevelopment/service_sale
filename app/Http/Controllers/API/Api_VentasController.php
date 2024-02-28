@@ -275,9 +275,11 @@ class Api_VentasController extends Controller
             $incorporacion = $request->incorporacion;
         }
         $inactivo = 0;
-        // if (isset($bplatam_2->CardCode)) {
-        //     $inactivo = $bplatam_2->FrozenFor == 'Y' ? 1 : 0;
-        // }
+        if (isset($bplatam_2->CardCode)) { //Ajuste debido a que sucito un caso que en sap estaba activo pero en bplatam no por lo que se la prioridad a SAP.
+            if(empty($bplatam) && $bplatam_2->FrozenFor == 'Y'){
+                $inactivo = 1;
+            }
+        }
         // if ($inactivo == 1) {
         //     $data['status'] = 321;
         //     $data['error'] = 'Inactive User';
