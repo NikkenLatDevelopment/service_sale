@@ -2176,7 +2176,7 @@ class Api_VentasController extends Controller
                 $regimen = $contracts->type_incorporate == 0 ? 'TPM' : 'TPF';
                 break;
             case 3:
-                $regimen = $contracts->type_incorporate == 1 ? 'PN' : 'PJ';
+                $regimen = $contracts->type_incorporate == 1 ? 'TPN' : 'TPJ';
                 if ($contracts->bank_code == 46) {
                     $number_account = trim($contracts->number_account);
                 } else {
@@ -2279,7 +2279,7 @@ class Api_VentasController extends Controller
                         $regimen = $user_bono->type_incorporate == 0 ? 'TPM' : 'TPF';
                         break;
                     case 3:
-                        $regimen = $user_bono->type_incorporate == 1 ? 'PN' : 'PJ';
+                        $regimen = $contracts->type_incorporate == 1 ? 'TPN' : 'TPJ';
                         if ($user_bono->bank_code == 46) {
                             $number_account = trim($user_bono->number_account);
                         } else {
