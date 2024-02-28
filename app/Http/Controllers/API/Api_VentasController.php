@@ -118,11 +118,11 @@ class Api_VentasController extends Controller
         }
         // return $sale;
 
-        // if ($sale->code == 'COL') {
-        //     $data['status'] = 300;
-        //     $data['error_info'] = 'Detendio a Petición - WEB-COL-' . $request->id;
-        //     return json_encode($data);
-        // }
+        if ($sale->code == 'PAN') {
+            $data['status'] = 300;
+            $data['error_info'] = 'Detendio a Petición - WEB-COL-' . $request->id;
+            return json_encode($data);
+        }
         //validar alcancia
         //se valida que sea una venta padre
         // try {
