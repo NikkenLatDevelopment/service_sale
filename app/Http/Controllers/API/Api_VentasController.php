@@ -2166,6 +2166,7 @@ class Api_VentasController extends Controller
                 $number_account = $contracts->number_account;
                 break;
             case 2:
+                $dni_route = $contracts->regimen;
                 $regimen = $contracts->type_incorporate == 0 ? 'TPM' : 'TPF';
                 break;
             case 3:
@@ -2267,6 +2268,7 @@ class Api_VentasController extends Controller
                         $number_account = $user_bono->number_account;
                         break;
                     case 2:
+                        $dni_route = $user_bono->regimen;
                         $regimen = $user_bono->type_incorporate == 0 ? 'TPM' : 'TPF';
                         break;
                     case 3:
