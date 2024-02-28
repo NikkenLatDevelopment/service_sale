@@ -2166,7 +2166,6 @@ class Api_VentasController extends Controller
         $dni_type = '';
         $dni_number = '';
         $number_account = '';
-        $reg_per = ['0' => 'PJ', '1' => 'PN', '2' => 'PNR'];
         switch (intval($contracts->country)) {
             case 1:
                 $dni_number = $contracts->number_document;
@@ -2177,7 +2176,7 @@ class Api_VentasController extends Controller
                 $regimen = $contracts->type_incorporate == 0 ? 'TPM' : 'TPF';
                 break;
             case 3:
-                $regimen = $reg_per[$contracts->type_incorporate];
+                $regimen = $contracts->type_incorporate == 1 ? 'PN' : 'PJ';
                 if ($contracts->bank_code == 46) {
                     $number_account = trim($contracts->number_account);
                 } else {
@@ -2280,7 +2279,7 @@ class Api_VentasController extends Controller
                         $regimen = $user_bono->type_incorporate == 0 ? 'TPM' : 'TPF';
                         break;
                     case 3:
-                        $regimen = $reg_per[$user_bono->type_incorporate];
+                        $regimen = $user_bono->type_incorporate == 1 ? 'PN' : 'PJ';
                         if ($user_bono->bank_code == 46) {
                             $number_account = trim($user_bono->number_account);
                         } else {
