@@ -2248,7 +2248,7 @@ class Api_VentasController extends Controller
                     'CardCode' => trim($contracts->code),
                     'DNIType' => $dni_type,
                     'DNINumber' => $dni_number,
-                    'DNIRoute' => $dni_route,
+                    'DNIRoute' => $dni_route == null ? '' : $dni_route,
                     'Regimen' => $regimen,
                     'CIAddress' => $contracts->address,
                     'CICity' =>  $contracts->residency_four,
