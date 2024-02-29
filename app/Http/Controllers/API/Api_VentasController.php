@@ -1796,7 +1796,7 @@ class Api_VentasController extends Controller
                 $banco_search = 1;
             }
         }
-        if ($banco_search == 1){
+        if ($banco_search == 1) {
             $payment_method = 'INTERBANK';
         }
         try {
