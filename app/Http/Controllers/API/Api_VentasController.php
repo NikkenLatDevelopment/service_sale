@@ -2173,7 +2173,7 @@ class Api_VentasController extends Controller
                 $regimen = $contracts->type_incorporate == 1 ? 'RS' : 'RC';
                 $dni_number = $contracts->number_document;
                 $number_account = $contracts->number_account;
-                $identificacion = isset($type_ident($contracts->number_document)) ? $type_ident($contracts->number_document) : '';
+                $identificacion = isset($type_ident[$contracts->number_document]) ? $type_ident($contracts->number_document) : '';
                 break;
             case 2:
                 $dni_route = $contracts->regimen;
@@ -2207,7 +2207,7 @@ class Api_VentasController extends Controller
             case 7:
                 $regimen = $contracts->type_incorporate == 1 ? 'NIV' : 'RUC';
                 $dni_exp = explode(',', $contracts->number_document);
-                $dni_number = trim($dni_exp[0]);
+                $dni_number = isset($dni_exp[1]) ? $dni_exp[0] : $contracts->number_document;
                 $number_account = trim($contracts->number_account);
                 break;
             case 8:
