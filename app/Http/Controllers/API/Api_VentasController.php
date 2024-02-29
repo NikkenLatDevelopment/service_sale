@@ -2360,7 +2360,7 @@ class Api_VentasController extends Controller
                     'AccountType' => trim($user_bono->type_account),
                     'AccountNumber' => $number_account,
                     'InterAccNumber' => '',
-                    'Identificacion' => $contracts->country == 8 ? '01' : $identificacion,
+                    'Identificacion' => $user_bono->country == 8 ? '01' : $identificacion,
                     'Req_Factura' => $user_bono->cfdi,
                     'CotitName' => $user_bono->name_cotitular,
                     'CotitDNIType' => $user_bono->type_document_cotitular == 0 ? '' : $user_bono->type_document_cotitular,
