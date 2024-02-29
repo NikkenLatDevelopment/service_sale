@@ -2197,6 +2197,9 @@ class Api_VentasController extends Controller
                 $number_account = trim($contracts->number_account);
                 break;
             case 7:
+                $regimen = 'NIV';
+                $dni_exp = explode(',',$contracts->number_document);
+                $dni_number = trim($dni_exp[0]);
                 $number_account = trim($contracts->number_account);
                 break;
             case 8:
