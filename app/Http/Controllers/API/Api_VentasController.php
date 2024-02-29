@@ -2166,10 +2166,14 @@ class Api_VentasController extends Controller
         $dni_type = '';
         $dni_number = '';
         $number_account = '';
+        $identificacion = '';
+        $type_ident = ['1' => 'Cédula de Ciudadania','2' => 'Cédula de Extranjería','12' => 'Régimen Común','13' => 'Régimen Simplificado'];
         switch (intval($contracts->country)) {
             case 1:
+                $regimen = $contracts->type_incorporate == 1 ? 'RS' : 'RC';
                 $dni_number = $contracts->number_document;
                 $number_account = $contracts->number_account;
+                $identificacion = isset($type_ident($contracts->number_document)) ? $type_ident($contracts->number_document) : '';
                 break;
             case 2:
                 $dni_route = $contracts->regimen;
@@ -2184,25 +2188,31 @@ class Api_VentasController extends Controller
                 }
                 break;
             case 4:
+                $dni_number = $contracts->number_document;
+                $regimen = $contracts->type_incorporate == 1 ? 'PN' : 'PJ';
                 $number_account = trim($contracts->number_account);
                 break;
             case 5:
                 $dni_route = $contracts->verify_digit;
                 $dni_type = $contracts->dgi;
-                $regimen = $contracts->type_incorporate == 0 ? 'RUC' : 'SIN RUC';
+                $regimen = $contracts->type_incorporate == 1 ? 'SIN RUC' : 'RUC';
                 $dni_number = $contracts->number_document;
                 $number_account = $contracts->number_account;
                 break;
             case 6:
+                $dni_number = $contracts->number_document;
+                $regimen = $contracts->type_incorporate == 1 ? 'PC' : 'PT';
                 $number_account = trim($contracts->number_account);
                 break;
             case 7:
-                $regimen = 'NIV';
-                $dni_exp = explode(',',$contracts->number_document);
+                $regimen = $contracts->type_incorporate == 1 ? 'NIV' : 'RUC';
+                $dni_exp = explode(',', $contracts->number_document);
                 $dni_number = trim($dni_exp[0]);
                 $number_account = trim($contracts->number_account);
                 break;
             case 8:
+                $dni_number = $contracts->number_document;
+                $regimen = $contracts->type_incorporate == 1 ? 'RT' : 'CJ';
                 $number_account = trim($contracts->number_account);
                 break;
             default:
@@ -2261,7 +2271,7 @@ class Api_VentasController extends Controller
                     'AccountType' => trim($contracts->type_account),
                     'AccountNumber' => $number_account,
                     'InterAccNumber' => '',
-                    'Identificacion' => $contracts->country == 8 ? '01' : '',
+                    'Identificacion' => $contracts->country == 8 ? '01' : $identificacion,
                     'Req_Factura' => $contracts->cfdi,
                     'CotitName' => $contracts->name_cotitular,
                     'CotitDNIType' => $contracts->type_document_cotitular == 0 ? '' : $contracts->type_document_cotitular,
@@ -2272,17 +2282,25 @@ class Api_VentasController extends Controller
                 ];
             }
             if ($bono == 1) {
+                $dni_route = '';
+                $regimen = '';
+                $dni_type = '';
+                $dni_number = '';
+                $number_account = '';
+                $identificacion = '';
                 switch (intval($user_bono->country)) {
                     case 1:
+                        $regimen = $user_bono->type_incorporate == 1 ? 'RS' : 'RC';
                         $dni_number = $user_bono->number_document;
                         $number_account = $user_bono->number_account;
+                        $identificacion = isset($type_ident($user_bono->number_document)) ? $type_ident($user_bono->number_document) : '';
                         break;
                     case 2:
                         $dni_route = $user_bono->regimen;
                         $regimen = $user_bono->type_incorporate == 0 ? 'TPM' : 'TPF';
                         break;
                     case 3:
-                        $regimen = $contracts->type_incorporate == 1 ? 'TPN' : 'TPJ';
+                        $regimen = $user_bono->type_incorporate == 1 ? 'TPN' : 'TPJ';
                         if ($user_bono->bank_code == 46) {
                             $number_account = trim($user_bono->number_account);
                         } else {
@@ -2290,22 +2308,31 @@ class Api_VentasController extends Controller
                         }
                         break;
                     case 4:
+                        $dni_number = $user_bono->number_document;
+                        $regimen = $user_bono->type_incorporate == 1 ? 'PN' : 'PJ';
                         $number_account = trim($user_bono->number_account);
                         break;
                     case 5:
                         $dni_route = $user_bono->verify_digit;
                         $dni_type = $user_bono->dgi;
-                        $regimen = $user_bono->type_incorporate == 0 ? 'RUC' : 'SIN RUC';
+                        $regimen = $user_bono->type_incorporate == 1 ? 'SIN RUC' : 'RUC';
                         $dni_number = $user_bono->number_document;
                         $number_account = $user_bono->number_account;
                         break;
                     case 6:
+                        $dni_number = $user_bono->number_document;
+                        $regimen = $user_bono->type_incorporate == 1 ? 'PC' : 'PT';
                         $number_account = trim($user_bono->number_account);
                         break;
                     case 7:
+                        $regimen = $user_bono->type_incorporate == 1 ? 'NIV' : 'RUC';
+                        $dni_exp = explode(',', $user_bono->number_document);
+                        $dni_number = trim($dni_exp[0]);
                         $number_account = trim($user_bono->number_account);
                         break;
                     case 8:
+                        $dni_number = $user_bono->number_document;
+                        $regimen = $user_bono->type_incorporate == 1 ? 'RT' : 'CJ';
                         $number_account = trim($user_bono->number_account);
                         break;
                     default:
@@ -2333,7 +2360,7 @@ class Api_VentasController extends Controller
                     'AccountType' => trim($user_bono->type_account),
                     'AccountNumber' => $number_account,
                     'InterAccNumber' => '',
-                    'Identificacion' => '',
+                    'Identificacion' => $contracts->country == 8 ? '01' : $identificacion,
                     'Req_Factura' => $user_bono->cfdi,
                     'CotitName' => $user_bono->name_cotitular,
                     'CotitDNIType' => $user_bono->type_document_cotitular == 0 ? '' : $user_bono->type_document_cotitular,
