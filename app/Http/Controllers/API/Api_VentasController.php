@@ -1789,6 +1789,16 @@ class Api_VentasController extends Controller
                 $payment_method = 'MercadoPago - other';
             }
         }
+        $banco_search = 0;
+        if ($payment->payment_provider == 'Institución Bancaria') {
+            $banco = 'INTERBANK';
+            if (strpos($payment->detalle, $banco) !== false) {
+                $banco_search = 1;
+            }
+        }
+        if ($banco_search == 1){
+            $payment_method = 'INTERBANK';
+        }
         try {
             $info_payment = PaymentAccounts::where('country', 3)
                 ->where('payment_provider', $payment->payment_provider)
