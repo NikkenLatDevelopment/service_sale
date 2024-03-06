@@ -990,6 +990,16 @@ class Api_VentasController extends Controller
 
         $oh = [];
         try {
+            $U_Comen_Envio_final = '';
+            if($tvrepdom == 1){
+                $U_Comen_Envio_final = $U_Comen_Envio;
+            }
+            else if(intval($user->country_id) == 5 || intval($user->country_id) == 8){
+                $U_Comen_Envio_final = $address_logbook->referencia;
+            }
+            else{
+                $U_Comen_Envio_final = null;
+            }
             $header = [
                 'CardCode' => trim($user->sap_code),
                 'CardCountry' => $countrys[$user->country_id],
@@ -1030,8 +1040,9 @@ class Api_VentasController extends Controller
                 'CreditMemoTaxCode' => trim($taxcodes->SalesTaxCode),
                 'CreditMemoWhsCode' => $garantía == 1 ? null : trim($warehouses->SalesWhsCode),
                 'U_autoship' => $autoship,
-                'U_Numero_Envio' => $tvrepdom == 1 ? $U_Numero_Envio : null,
-                'U_Comen_Envio' => $tvrepdom == 1 ? $U_Comen_Envio : null,
+                // 'U_Numero_Envio' => $tvrepdom == 1 ? $U_Numero_Envio : null,
+                'U_Numero_Envio' => trim($address_logbook->numero),
+                'U_Comen_Envio' => $U_Comen_Envio_final,
                 'insurance' => $tvrepdom == 1 ? $Insurance : 0,
                 'Email' => $user->email,
                 'fecha_en_stgin' => trim($date_actual->format('Y-m-d H:i:s')),
@@ -2240,6 +2251,10 @@ class Api_VentasController extends Controller
             return $data;
         }
 
+        $AccountTypePan = [
+            "Ahorros" => 32,
+            "Corriente" => 22
+        ];
 
         try {
             $ciinfocomp = [];
@@ -2285,7 +2300,7 @@ class Api_VentasController extends Controller
                     'CIZipCode' =>  $contracts->residency_one_invoice != '' ? $contracts->residency_one_invoice : $contracts->residency_one,
                     'Phone2' => $contracts->cellular,
                     'BankCode' => trim($contracts->bank_code),
-                    'AccountType' => trim($contracts->type_account),
+                    'AccountType' => (intval($contracts->country) === 5) ? $AccountTypePan[trim($contracts->type_account)] : trim($contracts->type_account),
                     'AccountNumber' => $number_account,
                     'InterAccNumber' => '',
                     'Identificacion' => $contracts->country == 8 ? '01' : $identificacion,
