@@ -2254,7 +2254,7 @@ class Api_VentasController extends Controller
         $AccountTypePan = [
             "Ahorros" => 32,
             "Corriente" => 22,
-            "" => 32,
+            "" => '',
         ];
 
         try {
