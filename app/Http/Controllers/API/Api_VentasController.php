@@ -68,7 +68,7 @@ use App\Models\Ventas\BusinessPartnerAccInfo_Test;
 use App\Models\Ventas\BusinessPartnerAddress_Test;
 use App\Models\Ventas\BusinessPartnerTaxInfo_Test;
 
-class ApiVentasController extends Controller
+class Api_VentasController extends Controller
 {
 
     public function ventaProd(Request $request)
