@@ -98,7 +98,7 @@ class Api_VentasController extends Controller
             $data['error_info'] = 'Error al obtener los items de garantía';
             return json_encode($data);
         }
-        return $warrantys_items;
+        // return $warrantys_items;
         //Obtener datos de Ventas
         try {
             $sale = sales_tv::select('sales.*', 'countries.code')
