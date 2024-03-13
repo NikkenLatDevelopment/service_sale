@@ -2,75 +2,60 @@
 
 namespace App\Http\Controllers\API;
 
-
 use DateTime;
 use stdClass;
-
 use DateTimeZone;
+use App\Models\BPLatam;
+use App\Models\OH_TEST;
+use App\Models\OL_TEST;
+use App\Models\OP_TEST;
 use App\Models\User_TV;
-use App\Models\Mokuteki;
-use App\Models\SapUsers;
+use App\Models\countrys;
+use App\Models\sales_tv;
+use App\Models\Sap_User;
+use App\Models\Taxcodes;
 use App\Models\Contracts;
 use App\Models\EstadosCI;
-use App\Models\Ventas\OH;
-use App\Models\Ventas\OL;
-use App\Models\Ventas\OP;
-use App\Models\Control_CI;
-use App\Models\User_TVTest;
+use App\Models\Warehouses;
+use App\Models\CIINFO_TEST;
+use App\Models\OH_CHL_TEST;
+use App\Models\OL_CHL_TEST;
+use App\Models\OP_CHL_TEST;
 use Illuminate\Http\Request;
-use App\Models\Mokuteki_Test;
-use App\Models\Ventas\CIINFO;
-use App\Models\Ventas\OH_CHL;
-use App\Models\Ventas\OL_CHL;
-use App\Models\Ventas\OP_CHL;
 use App\Models\Contracts_test;
-use App\Models\Control_states;
-use App\Models\Ventas\BPLatam;
-use App\Models\Ventas\OH_Test;
-use App\Models\Ventas\OL_Test;
-use App\Models\Ventas\OP_Test;
-use App\Models\control_ci_test;
-use App\Models\Ventas\Countrys;
-use App\Models\Ventas\sales_tv;
-use App\Models\Ventas\Taxcodes;
-use App\Models\Ventas\CIINFOCOMP;
-use App\Models\Ventas\sales_dues;
-use App\Models\Ventas\Warehouses;
-use PhpParser\Node\Expr\FuncCall;
-use App\Models\Ventas\CIINFO_TEST;
-use App\Models\Ventas\CIINFOENVIO;
-use App\Models\Ventas\OH_CHL_Test;
-use App\Models\Ventas\OL_CHL_Test;
-use App\Models\Ventas\OP_CHL_Test;
+use App\Models\sales_payments;
+use App\Models\sales_products;
+use App\Models\Address_Logbook;
+use App\Models\CIINFOCOMP_TEST;
+use App\Models\Control_ci_test;
+use App\Models\PaymentAccounts;
+use App\Models\CIINFOENVIO_TEST;
+use App\Models\Products_Warranty;
 use Illuminate\Support\Facades\DB;
-use App\Models\Ventas\BPLatam_Test;
+use App\Models\warranties_rejected;
 use App\Http\Controllers\Controller;
-use App\Models\Ventas\sales_in_dues;
-use App\Models\Ventas\sales_tv_test;
-use App\Models\Ventas\Sales_Payments;
-use App\Models\Ventas\Sales_Products;
-use App\Models\Ventas\Address_Logbook;
-use App\Models\Ventas\BusinessPartner;
-use App\Models\Ventas\CIINFOCOMP_TEST;
-use App\Models\Ventas\PaymentAccounts;
-use App\Models\Ventas\CIINFOENVIO_TEST;
-use App\Models\Ventas\Products_Warranty;
-use App\Models\Ventas\Sales_Payments_Test;
-use App\Models\Ventas\Sales_Products_Test;
-use App\Models\Ventas\warranties_rejected;
-use App\Models\Ventas\Address_Logbook_Test;
-use App\Models\Ventas\BusinessPartner_Test;
-use App\Models\Ventas\warranties_in_process;
-use App\Models\Ventas\BusinessPartnerAccInfo;
-use App\Models\Ventas\BusinessPartnerAddress;
-use App\Models\Ventas\BusinessPartnerTaxInfo;
-use App\Models\Ventas\BusinessPartnerAccInfo_Test;
-use App\Models\Ventas\BusinessPartnerAddress_Test;
-use App\Models\Ventas\BusinessPartnerTaxInfo_Test;
+use App\Models\BusinessPartner;
+use App\Models\BusinessPartner_Test;
+use App\Models\BusinessPartnerAccInfo;
+use App\Models\warranties_in_process;
+use App\Models\BusinessPartnerAccInfo_Test;
+use App\Models\BusinessPartnerAddress;
+use App\Models\BusinessPartnerAddress_Test;
+use App\Models\BusinessPartnerTaxInfo;
+use App\Models\BusinessPartnerTaxInfo_Test;
+use App\Models\CIINFO;
+use App\Models\CIINFOCOMP;
+use App\Models\CIINFOENVIO;
+use App\Models\Control_ci;
+use App\Models\OH;
+use App\Models\OH_CHL;
+use App\Models\OL;
+use App\Models\OL_CHL;
+use App\Models\OP;
+use App\Models\OP_CHL;
 
-class ApiVentasController extends Controller
+class Api_VentasController extends Controller
 {
-
     public function ventaProd(Request $request)
     {
         $data['status'] = 200;
@@ -88,11 +73,6 @@ class ApiVentasController extends Controller
         $stopper = 0;
         if (isset($request->stopper)) {
             $stopper = $request->stopper;
-        }
-        if (isset($request->reprocesar)) {
-            $reprocesar = $request->reprocesar;
-        } else {
-            $reprocesar = 0;
         }
         //creacion de objeto que guarda la información
         $info = new stdClass();
@@ -138,6 +118,11 @@ class ApiVentasController extends Controller
         }
         // return $sale;
 
+        // if ($sale->code == 'PAN') {
+        //     $data['status'] = 300;
+        //     $data['error_info'] = 'Detendio a Petición - WEB-COL-' . $request->id;
+        //     return json_encode($data);
+        // }
         //validar alcancia
         //se valida que sea una venta padre
         // try {
@@ -158,7 +143,7 @@ class ApiVentasController extends Controller
 
         //Obtener Datos de Pago
         try {
-            $payment = Sales_Payments::where('sale_id', trim($request->id))
+            $payment = sales_payments::where('sale_id', trim($request->id))
                 ->where('status', 'pagada')
                 ->first();
         } catch (\Throwable $th) {
@@ -172,10 +157,16 @@ class ApiVentasController extends Controller
             return json_encode($data);
         }
         // return $payment->detalle;
-
-        //Obtener Lines 
+        // if ($sale->code == 'PAN') {
+        //     if ($payment->payment_provider == 'Institución Bancaria') {
+        //         $data['status'] = 300;
+        //         $data['error_info'] = 'Detendio a Petición - WEB-' . $sale->code . '-' . $request->id;
+        //         return json_encode($data);
+        //     }
+        // }
+        //Obtener Lines
         try {
-            $products = Sales_Products::where('sale_id', trim($request->id))->get();
+            $products = sales_products::where('sale_id', trim($request->id))->get();
         } catch (\Throwable $th) {
             $data['status'] = 306;
             $data['error_info'] = $th;
@@ -203,7 +194,6 @@ class ApiVentasController extends Controller
             return json_encode($data);
         }
         $shipping_address = json_decode($address_logbook->shipping_address);
-        // return $shipping_address;
         // return json_decode($address_logbook->shipping_address);
         //Obtener Usuario.
         if (isset($request->user_asigned)) {
@@ -226,14 +216,14 @@ class ApiVentasController extends Controller
                 if (!empty($user)) {
                     if ($user->client_type == 'CLIENTE') {
                         try {
-                            if (SapUsers::where('Cardcode', strval($user->sap_code_sponsor))->exists()) {
+                            if (Sap_User::where('Cardcode', strval($user->sap_code_sponsor))->exists()) {
                                 $user = User_TV::where('sap_code', $user->sap_code_sponsor)
                                     ->where('client_type', 'CI')
                                     ->where('status', 1)
                                     ->first();
                                 if (empty($user)) {
                                     $data['status'] = 308;
-                                    $data['error_info'] = 'No hay existe usuario para la venta. - WEB-' . $sale->code . '-' . $request->id;
+                                    $data['error_info'] = 'No hay existe usuario para la venta. - ' . $request->id;
                                     return json_encode($data);
                                 }
                             } else {
@@ -263,7 +253,7 @@ class ApiVentasController extends Controller
 
         //Validar Inscripción
         try {
-            $bplatam = SapUsers::where('Cardcode', strval($user->sap_code))->first();
+            $bplatam = Sap_User::where('Cardcode', strval($user->sap_code))->first();
             $bplatam_2 = BPLatam::where('CardCode', strval($user->sap_code))->first();
         } catch (\Throwable $th) {
             $data['status'] = 310;
@@ -320,8 +310,8 @@ class ApiVentasController extends Controller
                 //buscar si encontramos patrocinador con 5005
                 try {
                     $user_bono = Contracts::where('code', $user->sap_code_sponsor)->where('kit', '5005')
-                        ->where('status', 0)
-                        ->where('payment', 0)
+                        // ->where('status', 0)
+                        // ->where('payment', 0)
                         ->first();
                 } catch (\Throwable $th) {
                     //throw $th;
@@ -475,7 +465,7 @@ class ApiVentasController extends Controller
                 $ciinfocomp_response = $this->get_ciinfocomp($contracts, $bono, $user_bono, $tvrepdom);
                 if ($ciinfocomp_response['status'] != 200) {
                     $data['status'] = 312;
-                    $data['error_info'] = "Error CIINFO: " . $ciinfocomp_response['error_info'];
+                    $data['error_info'] = $ciinfocomp_response['error_info'];
                     return json_encode($data);
                 }
                 $ciinfocomp = $ciinfocomp_response['ciinfocomp'];
@@ -560,6 +550,7 @@ class ApiVentasController extends Controller
             if ($ciinfoenvio_response['status'] != 200) {
                 $data['status'] = 316;
                 $data['error_info'] = $ciinfoenvio_response['error_info'];
+                $data['cinfo'] = $ciinfoenvio_response;
                 return json_encode($data);
             }
             $ciinfoenvio = $ciinfoenvio_response['ciinfoenvio'];
@@ -603,324 +594,220 @@ class ApiVentasController extends Controller
                 $data['ciinfoenvio'] = isset($ciinfoenvio_response['ciinfoenvio']) ? $ciinfoenvio_response['ciinfoenvio'] : '';
             }
         }
-        $data['flag'] = 0;
         //    return $data;
-        if ($request->create != 0) {
-            //Procedemos a crear la información
-            try {
-                DB::beginTransaction();
-                if ($request->create == 2) {
-                    if ($sale->code == 'CHL') {
-                        foreach ($ol as $o) {
-                            $ol_create[] = OL_CHL_Test::create($o);
-                        }
-                        $data['flag'] = 1;
-                        $oh_create = OH_CHL_Test::create($oh);
-                        $data['flag'] = 2;
-                        $op_create = OP_CHL_Test::create($op);
-                        $data['flag'] = 3;
-                    } else {
-                        foreach ($ol as $o) {
-                            $ol_create[] = OL_Test::create($o);
-                        }
-                        $data['flag'] = 1;
-                        $oh_create = OH_Test::create($oh);
-                        $data['flag'] = 2;
-                        $op_create = OP_Test::create($op);
-                        $data['flag'] = 3;
-                    }
-                    if ($sale->code == 'MEX' || ($tvrepdom == 1 && $incorporacion == 1)) {
-                        if ($tvrepdom == 1 && $incorporacion == 1) {
-                            $ciinfoenvio_db = CIINFOENVIO_TEST::create($ciinfoenvio);
-                        } else {
-                            if (CIINFOENVIO_TEST::where('CardCode', strval($user->sap_code))->exists()) {
-                                $ciinfoenvio_db = CIINFOENVIO_TEST::where('CardCode', strval($user->sap_code))->limit(1)->update($ciinfoenvio);
-                            } else {
-                                $ciinfoenvio_db = CIINFOENVIO_TEST::create($ciinfoenvio);
-                            }
-                        }
-                    }
-                    $data['flag'] = 4;
-                    if ($incorporacion == 1) {
-                        if ($sale->code == 'CHL') {
-                            $data['businesspartner_create'] = BusinessPartner_Test::create($businesspartner);
-                            $data['flag'] = 5;
-                            $data['businesspartnerAddress_create'] = BusinessPartnerAddress_Test::create($businesspartneraddress);
-                            $data['flag'] = 6;
-                            $data['businesspartnerTaxInfo_create'] = BusinessPartnerTaxInfo_Test::create($businesspartnertaxinfo);
-                            $data['flag'] = 7;
-                            $data['businesspartnerAccInfo_create'] = BusinessPartnerAccInfo_Test::create($businesspartneraccinfo);
-                        } else {
-                            $ciinfo_db = CIINFO_TEST::create($ciinfo);
-                            $data['flag'] = 5;
-                            $ciinfocomp_db = CIINFOCOMP_TEST::create($ciinfocomp);
-                            $data['flag'] = 6;
-                            $data['contracts_update'] = Contracts_test::where('code', $user->sap_code)->limit(1)->update(['status' => 1, 'payment' => $sale->id]);
-                            $data['flag'] = 7;
-                            $data['control_ci_update'] = control_ci_test::where('codigo', $user->sap_code)->limit(1)->update(['estatus' => 1, 'b4' => 7]);
-                        }
-                    }
-                    $data['flag'] = 8;
-                    if ($internacional == 1) {
-                        if ($sale->code == 'CHL') {
-                            if (BusinessPartner_Test::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
-                                $data['Businesspartner_update'] = BusinessPartner_Test::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartner_update);
-                            } else {
-                                $data['Businesspartner_update'] = BusinessPartner_Test::create($businesspartner_update);
-                            }
-                            $data['flag'] = 9;
-                            if (BusinessPartnerAddress_Test::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
-                                $data['BusinessPartnerAddress_update'] = BusinessPartnerAddress_Test::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartneraddress_update);
-                            } else {
-                                $data['BusinessPartnerAddress_update'] = BusinessPartnerAddress_Test::create($businesspartneraddress_update);
-                            }
-                            $data['flag'] = 10;
-                            if (BusinessPartnerTaxInfo_Test::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
-                                $data['BBusinessPartnerTaxInfo_update'] = BusinessPartnerTaxInfo_Test::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartnertaxinfo_update);
-                            } else {
-                                $data['BusinessPartnerTaxInfo_update'] = BusinessPartnerTaxInfo_Test::create($businesspartnertaxinfo_update);
-                            }
-                            $data['flag'] = 11;
-                            if (BusinessPartnerAccInfo_Test::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
-                                $data['usinessPartnerAccInfo_update'] = BusinessPartnerAccInfo_Test::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartneraccinfo_update);
-                            } else {
-                                $data['usinessPartnerAccInfo_update'] = BusinessPartnerAccInfo_Test::create($businesspartneraccinfo_update);
-                            }
-                            $data['flag'] = 12;
-                        } else {
-                            $ciinfo_db = CIINFO_TEST::where('CardCode', $user->sap_code)->limit(1)->update($ciinfo_update);
-                            $data['flag'] = 9;
-                            $ciinfocomp_db = CIINFOCOMP_TEST::where('CardCode', $user->sap_code)->limit(1)->update($ciinfocomp_update);
-                            $data['flag'] = 10;
-                        }
-                    }
-                    $data['flag'] = 13;
-                    if ($bono == 1) {
-                        if ($sale->code == 'CHL') {
-                            $data['oh_bono_create'] = OH_CHL_Test::create($oh_bono);
-                            $data['flag'] = 14;
-                            $data['ol_bono_create'] = OL_CHL_Test::create($ol_bono);
-                            $data['flag'] = 15;
-                            $data['op_bono_create'] = OP_CHL_Test::create($op_bono);
-                            $data['flag'] = 16;
-                            $data['businessparter_bono_create'] = BusinessPartner_Test::create($businesspartner_bono);
-                            $data['flag'] = 17;
-                            $data['businessparteraddress_bono_create'] = BusinessPartnerAddress_Test::create($businesspartneraddress_bono);
-                            $data['flag'] = 18;
-                            $data['businesspartertaxinfo_bono_create'] = BusinessPartnerTaxInfo_Test::create($businesspartnertaxinfo_bono);
-                            $data['flag'] = 19;
-                            $data['businessparteraccinfo_bono_create'] = BusinessPartnerAccInfo_Test::create($businesspartneraccinfo_bono);
-                        } else {
-                            $data['oh_bono_create'] = OH_Test::create($oh_bono);
-                            $data['flag'] = 14;
-                            $data['ol_bono_create'] = OL_Test::create($ol_bono);
-                            $data['flag'] = 15;
-                            $data['op_bono_create'] = OP_Test::create($op_bono);
-                            $data['flag'] = 16;
-                            $data['ciinfo_bono_create'] = CIINFO_TEST::create($ciinfo_bono);
-                            $data['flag'] = 17;
-                            $data['ciinfocomp_bono_create'] = CIINFOCOMP_TEST::create($ciinfocomp_bono);
-                            $data['flag'] = 18;
-                            if ($sale->code == 'MEX') {
-                                $data['ciinfoenvio_bono_create'] = CIINFOENVIO_TEST::create($ciinfoenvio_bono);
-                            }
-                            $data['flag'] = 19;
-                        }
-                        $data['flag'] = 20;
-                        $data['contracts_bono'] = Contracts_test::where('code', $user_bono->code)->limit(1)->update(['status' => 1, 'payment' => '55' . $sale->id]);
-                        $data['flag'] = 21;
-                        $data['control_ci_bono'] = control_ci_test::where('codigo', $user_bono->code)->limit(1)->update(['estatus' => 1, 'b4' => 7]);
-                        $data['flag'] = 22;
-                    }
-                    // $sales_update = sales_tv::where('id', strval($sale->id))
-                    //     ->limit(1)
-                    //     ->update(['processed' => 1, 'validate' => 1]);
-                }
-                if ($request->create == 1) {
-                    if ($reprocesar == 1) {
-                        $data['dlt_oh'] = OH::where('DocEntry', $sale->id)->limit(1)->delete();
-                        $data['dlt_op'] = OP::where('DocEntry', $sale->id)->limit(1)->delete();
-                        $data['dlt_ol'] = OP::where('DocEntry', $sale->id)->delete();
-
-                        if ($incorporacion == 1) {
-                            $data['dlt_cinfo'] = CIINFO::where('CardCode', $user->sap_code)->limit(1)->delete();
-                            $data['dlt_cinfocom'] = CIINFOCOMP::where('CardCode', $user->sap_code)->limit(1)->delete();
-                            $data['dlt_cinfoenvio'] = CIINFOENVIO::where('CardCode', $user->sap_code)->limit(1)->delete();
-                        }
-                        if ($bono == 1) {
-                            $data['dlt_oh'] = OH::where('DocEntry', '55' . trim($sale->id))->limit(1)->delete();
-                            $data['dlt_op'] = OP::where('DocEntry', '55' . trim($sale->id))->limit(1)->delete();
-                            $data['dlt_ol'] = OP::where('DocEntry', '55' . trim($sale->id))->delete();
-                            $data['dlt_cinfo'] = CIINFO::where('CardCode', $user_bono->code)->limit(1)->delete();
-                            $data['dlt_cinfocom'] = CIINFOCOMP::where('CardCode', $user_bono->code)->limit(1)->delete();
-                            $data['dlt_cinfoenvio'] = CIINFOENVIO::where('CardCode', $user_bono->code)->limit(1)->delete();
-                        }
-                    }
-                    if ($sale->code == 'CHL') {
-                        foreach ($ol as $o) {
-                            $ol_create[] = OL_CHL::create($o);
-                        }
-                        $data['flag'] = 1;
-                        $oh_create = OH_CHL::create($oh);
-                        $data['flag'] = 2;
-                        $op_create = OP_CHL::create($op);
-                        $data['flag'] = 3;
-                    } else {
-                        foreach ($ol as $o) {
-                            $ol_create[] = OL::create($o);
-                        }
-                        $data['flag'] = 1;
-                        $oh_create = OH::create($oh);
-                        $data['flag'] = 2;
-                        $op_create = OP::create($op);
-                        $data['flag'] = 3;
-                    }
-                    if ($sale->code == 'MEX' || ($tvrepdom == 1 && $incorporacion == 1)) {
-                        if ($tvrepdom == 1 && $incorporacion == 1) {
-                            $ciinfoenvio_db = CIINFOENVIO::create($ciinfoenvio);
-                        } else {
-                            if (CIINFOENVIO::where('CardCode', strval($user->sap_code))->exists()) {
-                                $ciinfoenvio_db = CIINFOENVIO::where('CardCode', strval($user->sap_code))->limit(1)->update($ciinfoenvio);
-                            } else {
-                                $ciinfoenvio_db = CIINFOENVIO::create($ciinfoenvio);
-                            }
-                        }
-                    }
-                    $data['flag'] = 4;
-                    if ($incorporacion == 1) {
-                        if ($sale->code == 'CHL') {
-                            $data['businesspartner_create'] = BusinessPartner::create($businesspartner);
-                            $data['flag'] = 5;
-                            $data['businesspartnerAddress_create'] = BusinessPartnerAddress::create($businesspartneraddress);
-                            $data['flag'] = 6;
-                            $data['businesspartnerTaxInfo_create'] = BusinessPartnerTaxInfo::create($businesspartnertaxinfo);
-                            $data['flag'] = 7;
-                            $data['businesspartnerAccInfo_create'] = BusinessPartnerAccInfo::create($businesspartneraccinfo);
-                        } else {
-                            $ciinfo_db = CIINFO::create($ciinfo);
-                            $data['flag'] = 5;
-                            $ciinfocomp_db = CIINFOCOMP::create($ciinfocomp);
-                            $data['flag'] = 6;
-                            $data['contracts_update'] = Contracts::where('code', $user->sap_code)->limit(1)->update(['status' => 1, 'payment' => $sale->id]);
-                            $data['flag'] = 7;
-                            $data['control_ci_update'] = Control_CI::where('codigo', $user->sap_code)->limit(1)->update(['estatus' => 1, 'b4' => 7, 'b9' => 4]);
-                        }
-                    }
-                    $data['flag'] = 8;
-                    if ($internacional == 1) {
-                        if ($sale->code == 'CHL') {
-                            if (BusinessPartner::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
-                                $data['Businesspartner_update'] = BusinessPartner::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartner_update);
-                            } else {
-                                $data['Businesspartner_update'] = BusinessPartner::create($businesspartner_update);
-                            }
-                            $data['flag'] = 9;
-                            if (BusinessPartnerAddress::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
-                                $data['BusinessPartnerAddress_update'] = BusinessPartnerAddress::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartneraddress_update);
-                            } else {
-                                $data['BusinessPartnerAddress_update'] = BusinessPartnerAddress::create($businesspartneraddress_update);
-                            }
-                            $data['flag'] = 10;
-                            if (BusinessPartnerTaxInfo::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
-                                $data['BBusinessPartnerTaxInfo_update'] = BusinessPartnerTaxInfo::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartnertaxinfo_update);
-                            } else {
-                                $data['BusinessPartnerTaxInfo_update'] = BusinessPartnerTaxInfo::create($businesspartnertaxinfo_update);
-                            }
-                            $data['flag'] = 11;
-                            if (BusinessPartnerAccInfo::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
-                                $data['usinessPartnerAccInfo_update'] = BusinessPartnerAccInfo::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartneraccinfo_update);
-                            } else {
-                                $data['usinessPartnerAccInfo_update'] = BusinessPartnerAccInfo::create($businesspartneraccinfo_update);
-                            }
-                            $data['flag'] = 12;
-                        } else {
-                            $ciinfo_db = CIINFO::where('CardCode', $user->sap_code)->limit(1)->update($ciinfo_update);
-                            $data['flag'] = 9;
-                            $ciinfocomp_db = CIINFOCOMP::where('CardCode', $user->sap_code)->limit(1)->update($ciinfocomp_update);
-                            $data['flag'] = 10;
-                        }
-                    }
-                    $data['flag'] = 13;
-                    if ($bono == 1) {
-                        if ($sale->code == 'CHL') {
-                            $data['oh_bono_create'] = OH_CHL::create($oh_bono);
-                            $data['flag'] = 14;
-                            $data['ol_bono_create'] = OL_CHL::create($ol_bono);
-                            $data['flag'] = 15;
-                            $data['op_bono_create'] = OP_CHL::create($op_bono);
-                            $data['flag'] = 16;
-                            $data['businessparter_bono_create'] = BusinessPartner::create($businesspartner_bono);
-                            $data['flag'] = 17;
-                            $data['businessparteraddress_bono_create'] = BusinessPartnerAddress::create($businesspartneraddress_bono);
-                            $data['flag'] = 18;
-                            $data['businesspartertaxinfo_bono_create'] = BusinessPartnerTaxInfo::create($businesspartnertaxinfo_bono);
-                            $data['flag'] = 19;
-                            $data['businessparteraccinfo_bono_create'] = BusinessPartnerAccInfo::create($businesspartneraccinfo_bono);
-                        } else {
-                            $data['oh_bono_create'] = OH::create($oh_bono);
-                            $data['flag'] = 14;
-                            $data['ol_bono_create'] = OL::create($ol_bono);
-                            $data['flag'] = 15;
-                            $data['op_bono_create'] = OP::create($op_bono);
-                            $data['flag'] = 16;
-                            $data['ciinfo_bono_create'] = CIINFO::create($ciinfo_bono);
-                            $data['flag'] = 17;
-                            $data['ciinfocomp_bono_create'] = CIINFOCOMP::create($ciinfocomp_bono);
-                            $data['flag'] = 18;
-                            if ($sale->code == 'MEX') {
-                                $data['ciinfoenvio_bono_create'] = CIINFOENVIO::create($ciinfoenvio_bono);
-                            }
-                            $data['flag'] = 19;
-                        }
-                        $data['flag'] = 20;
-                        $data['contracts_bono'] = Contracts::where('code', $user_bono->code)->limit(1)->update(['status' => 1, 'payment' => '55' . $sale->id]);
-                        $data['flag'] = 21;
-                        $data['control_ci_bono'] = control_ci::where('codigo', $user_bono->code)->limit(1)->update(['estatus' => 1, 'b4' => 7, 'b9' => 4]);
-                        $data['flag'] = 22;
-                    }
-                    // $sales_update = sales_tv::where('id', strval($sale->id))
-                    //     ->limit(1)
-                    //     ->update(['processed' => 1, 'validate' => 1]);
-                }
-                DB::commit();
-            } catch (\Throwable $th) {
-                $data['error'] = $th;
-
-                $data['validar_error'] =
-                    DB::rollback();
-                if (strpos($data['error'], "object 'object 'dbo.IT_OrderHeader'. The duplicate key") !== false) {
-                    $data['status'] = 318;
-                } else {
-                    $data['status'] = 317;
-                }
-                return json_encode($data);
-            }
-            try {
-                $data['create_OH'] = $oh_create;
-                $data['create_OL'] = $ol_create;
-                $data['create_OP'] = $op_create;
-
-                if ($sale->code != 'CHL') {
-                    $data['ciinfo_db'] = isset($ciinfo_db) ? $ciinfo_db : '';
-                    $data['ciinfocomp_db'] = isset($ciinfocomp_db) ? $ciinfocomp_db : '';
-                    $data['ciinfoenvio_db'] = isset($ciinfoenvio_db) ? $ciinfoenvio_db : '';
-                } else {
-                    try {
-                        $conection = DB::connection('170');
-                        $response = $conection->select("SET NOCOUNT ON; EXEC NIKKENREG_STG.dbo.sp_ins_orderNumIntoMQ 'WEB-$sale->code-$sale->id';");
-                        DB::disconnect('170');
-                    } catch (\Throwable $th) {
-                        $data['error'] = $th;
-                    }
-                }
-            } catch (\Throwable $th) {
-                $data['error'] = $th;
-                $data['status'] = 329;
-                return json_encode($data);
-            }
-
-            // $data['sales_update'] = isset($sales_update) ? $sales_update : '';
+        if ($stopper == 5) {
+            return $data;
         }
+
+        //Procedemos a crear la información
+
+        try {
+            DB::beginTransaction();
+
+            // if ($tvrepdom == 1) {
+            if ($sale->code == 'CHL') {
+                foreach ($ol as $o) {
+                    $ol_create[] = OL_CHL::create($o);
+                }
+                $oh_create = OH_CHL::create($oh);
+                $op_create = OP_CHL::create($op);
+            } else {
+                foreach ($ol as $o) {
+                    $ol_create[] = OL::create($o);
+                }
+                $oh_create = OH::create($oh);
+                $op_create = OP::create($op);
+            }
+            if ($sale->code == 'MEX' || ($tvrepdom == 1 && $incorporacion == 1)) {
+                if ($tvrepdom == 1 && $incorporacion == 1) {
+                    $ciinfoenvio_db = CIINFOENVIO::create($ciinfoenvio);
+                } else {
+                    if (CIINFOENVIO::where('CardCode', strval($user->sap_code))->exists()) {
+                        $ciinfoenvio_db = CIINFOENVIO::where('CardCode', strval($user->sap_code))->limit(1)->update($ciinfoenvio);
+                    } else {
+                        $ciinfoenvio_db = CIINFOENVIO::create($ciinfoenvio);
+                    }
+                }
+            }
+            if ($incorporacion == 1) {
+                if ($sale->code == 'CHL') {
+                    $data['businesspartner_create'] = BusinessPartner::create($businesspartner);
+                    $data['businesspartnerAddress_create'] = BusinessPartnerAddress::create($businesspartneraddress);
+                    $data['businesspartnerTaxInfo_create'] = BusinessPartnerTaxInfo::create($businesspartnertaxinfo);
+                    $data['businesspartnerAccInfo_create'] = BusinessPartnerAccInfo::create($businesspartneraccinfo);
+                } else {
+                    $ciinfo_db = CIINFO::create($ciinfo);
+                    $ciinfocomp_db = CIINFOCOMP::create($ciinfocomp);
+                    $data['contracts_update'] = Contracts::where('code', $user->sap_code)->limit(1)->update(['status' => 1, 'payment' => $sale->id]);
+                    $data['control_ci_update'] = Control_ci::where('codigo', $user->sap_code)->limit(1)->update(['estatus' => 1, 'b4' => 7, 'b9' => 0]);
+                }
+            }
+            if ($internacional == 1) {
+                if ($sale->code == 'CHL') {
+                    if (BusinessPartner::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
+                        $data['Businesspartner_update'] = BusinessPartner::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartner_update);
+                    } else {
+                        $data['Businesspartner_update'] = BusinessPartner::create($businesspartner_update);
+                    }
+                    if (BusinessPartnerAddress::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
+                        $data['BusinessPartnerAddress_update'] = BusinessPartnerAddress::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartneraddress_update);
+                    } else {
+                        $data['BusinessPartnerAddress_update'] = BusinessPartnerAddress::create($businesspartneraddress_update);
+                    }
+                    if (BusinessPartnerTaxInfo::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
+                        $data['BBusinessPartnerTaxInfo_update'] = BusinessPartnerTaxInfo::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartnertaxinfo_update);
+                    } else {
+                        $data['BusinessPartnerTaxInfo_update'] = BusinessPartnerTaxInfo::create($businesspartnertaxinfo_update);
+                    }
+                    if (BusinessPartnerAccInfo::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
+                        $data['usinessPartnerAccInfo_update'] = BusinessPartnerAccInfo::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartneraccinfo_update);
+                    } else {
+                        $data['usinessPartnerAccInfo_update'] = BusinessPartnerAccInfo::create($businesspartneraccinfo_update);
+                    }
+                } else {
+                    $ciinfo_db = CIINFO::where('CardCode', $user->sap_code)->limit(1)->update($ciinfo_update);
+                    $ciinfocomp_db = CIINFOCOMP::where('CardCode', $user->sap_code)->limit(1)->update($ciinfocomp_update);
+                }
+            }
+            if ($bono == 1) {
+                if ($sale->code == 'CHL') {
+                    $data['oh_bono_create'] = OH_CHL::create($oh_bono);
+                    $data['ol_bono_create'] = OL_CHL::create($ol_bono);
+                    $data['op_bono_create'] = OP_CHL::create($op_bono);
+                    $data['businessparter_bono_create'] = BusinessPartner::create($businesspartner_bono);
+                    $data['businessparteraddress_bono_create'] = BusinessPartnerAddress::create($businesspartneraddress_bono);
+                    $data['businesspartertaxinfo_bono_create'] = BusinessPartnerTaxInfo::create($businesspartnertaxinfo_bono);
+                    $data['businessparteraccinfo_bono_create'] = BusinessPartnerAccInfo::create($businesspartneraccinfo_bono);
+                } else {
+                    $data['oh_bono_create'] = OH::create($oh_bono);
+                    $data['ol_bono_create'] = OL::create($ol_bono);
+                    $data['op_bono_create'] = OP::create($op_bono);
+                    $data['ciinfo_bono_create'] = CIINFO::create($ciinfo_bono);
+                    $data['ciinfocomp_bono_create'] = CIINFOCOMP::create($ciinfocomp_bono);
+                    if ($sale->code == 'MEX') {
+                        $data['ciinfoenvio_bono_create'] = CIINFOENVIO::create($ciinfoenvio_bono);
+                    }
+                }
+                $data['contracts_bono'] = Contracts::where('code', $user_bono->code)->limit(1)->update(['status' => 1, 'payment' => '55' . $sale->id]);
+                $data['control_ci_bono'] = control_ci::where('codigo', $user_bono->code)->limit(1)->update(['estatus' => 1, 'b4' => 7, 'b9' => 0]);
+            }
+            // $sales_update = sales_tv::where('id', strval($sale->id))
+            //     ->limit(1)
+            //     ->update(['processed' => 1, 'validate' => 1]);
+            // } else {
+            //     if ($sale->code == 'CHL') {
+            //         foreach ($ol as $o) {
+            //             $ol_create[] = OL_CHL_TEST::create($o);
+            //         }
+            //         $oh_create = OH_CHL_TEST::create($oh);
+            //         $op_create = OP_CHL_TEST::create($op);
+            //     } else {
+            //         foreach ($ol as $o) {
+            //             $ol_create[] = OL_TEST::create($o);
+            //         }
+            //         $oh_create = OH_TEST::create($oh);
+            //         $op_create = OP_TEST::create($op);
+            //     }
+            //     //Procedemos con los CIINFOS
+
+            //     //CIINFOENVIO siempre que sea una venta de mexico se va necesitar.
+            //     if ($sale->code == 'MEX') {
+            //         if (CIINFOENVIO_TEST::where('CardCode', strval($user->sap_code))->exists()) {
+            //             $ciinfoenvio_db = CIINFOENVIO_TEST::where('CardCode', strval($user->sap_code))->limit(1)->update($ciinfoenvio);
+            //         } else {
+            //             $ciinfoenvio_db = CIINFOENVIO_TEST::create($ciinfoenvio);
+            //         }
+            //     }
+            //     if ($incorporacion == 1) {
+            //         if ($sale->code == 'CHL') {
+            //             $data['businesspartner_create'] = BusinessPartner_Test::create($businesspartner);
+            //             $data['businesspartnerAddress_create'] = BusinessPartnerAddress_Test::create($businesspartneraddress);
+            //             $data['businesspartnerTaxInfo_create'] = BusinessPartnerTaxInfo_Test::create($businesspartnertaxinfo);
+            //             $data['businesspartnerAccInfo_create'] = BusinessPartnerAccInfo_Test::create($businesspartneraccinfo);
+            //         } else {
+            //             $ciinfo_db = CIINFO_TEST::create($ciinfo);
+            //             $ciinfocomp_db = CIINFOCOMP_TEST::create($ciinfocomp);
+            //             $data['contracts_update'] = Contracts_test::where('code', strval($user->sap_code))->limit(1)->update(['status' => 1, 'payment' => $sale->id]);
+            //             $data['control_ci_update'] = Control_ci_test::where('codigo', strval($user->sap_code))->limit(1)->update(['estatus' => 1, 'b4' => 7]);
+            //         }
+            //     }
+            //     if ($internacional == 1) {
+            //         if ($sale->code == 'CHL') {
+            //             if (BusinessPartner_Test::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
+            //                 $data['Businesspartner_update'] = BusinessPartner_Test::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartner_update);
+            //             } else {
+            //                 $data['Businesspartner_update'] = BusinessPartner_Test::create($businesspartner_update);
+            //             }
+            //             if (BusinessPartnerAddress_Test::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
+            //                 $data['BusinessPartnerAddress_update'] = BusinessPartnerAddress_Test::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartneraddress_update);
+            //             } else {
+            //                 $data['BusinessPartnerAddress_update'] = BusinessPartnerAddress_Test::create($businesspartneraddress_update);
+            //             }
+            //             if (BusinessPartnerTaxInfo_Test::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
+            //                 $data['BusinessPartnerTaxInfo_update'] = BusinessPartnerTaxInfo_Test::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartnertaxinfo_update);
+            //             } else {
+            //                 $data['BusinessPartnerTaxInfo_update'] = BusinessPartnerTaxInfo_Test::create($businesspartnertaxinfo_update);
+            //             }
+            //             if (BusinessPartnerAccInfo_Test::where('CardCode', strval($user->sap_code))->limit(1)->exists()) {
+            //                 $data['usinessPartnerAccInfo_update'] = BusinessPartnerAccInfo_Test::where('CardCode', strval($user->sap_code))->limit(1)->update($businesspartneraccinfo_update);
+            //             } else {
+            //                 $data['usinessPartnerAccInfo_update'] = BusinessPartnerAccInfo_Test::create($businesspartneraccinfo_update);
+            //             }
+            //         } else {
+            //             $ciinfo_db = CIINFO_TEST::where('CardCode', strval($user->sap_code))->limit(1)->update($ciinfo_update);
+            //             $ciinfocomp_db = CIINFOCOMP_TEST::where('CardCode', strval($user->sap_code))->limit(1)->update($ciinfocomp_update);
+            //         }
+            //     }
+            //     if ($bono == 1) {
+            //         if ($sale->code == 'CHL') {
+            //             $data['oh_bono_create'] = OH_CHL_Test::create($oh_bono);
+            //             $data['ol_bono_create'] = OL_CHL_Test::create($ol_bono);
+            //             $data['op_bono_create'] = OP_CHL_Test::create($op_bono);
+            //             $data['businessparter_bono_create'] = BusinessPartner_Test::create($businesspartner_bono);
+            //             $data['businessparteraddress_bono_create'] = BusinessPartnerAddress_Test::create($businesspartneraddress_bono);
+            //             $data['businesspartertaxinfo_bono_create'] = BusinessPartnerTaxInfo_Test::create($businesspartnertaxinfo_bono);
+            //             $data['businessparteraccinfo_bono_create'] = BusinessPartnerAccInfo_Test::create($businesspartneraccinfo_bono);
+            //         } else {
+            //             $data['oh_bono_create'] = OH_Test::create($oh_bono);
+            //             $data['ol_bono_create'] = OL_Test::create($ol_bono);
+            //             $data['op_bono_create'] = OP_Test::create($op_bono);
+            //             $data['ciinfo_bono_create'] = CIINFO_TEST::create($ciinfo_bono);
+            //             $data['ciinfocomp_bono_create'] = CIINFOCOMP_TEST::create($ciinfocomp_bono);
+            //             $data['ciinfoenvio_bono_create'] = CIINFOENVIO_TEST::create($ciinfoenvio_bono);
+            //         }
+            //         $data['contracts_bono'] = Contracts_test::where('code', $user_bono->code)->limit(1)->update(['status' => 1, 'payment' => '55' . $sale->id]);
+            //         $data['control_ci_bono'] = control_ci_test::where('codigo', $user_bono->code)->limit(1)->update(['estatus' => 1, 'b4' => 7]);
+            //     }
+            //     // $sales_update = sales_tv_test::where('id', strval($sale->id))
+            //     //     ->limit(1)
+            //     //     ->update(['processed' => 1, 'validate' => 1]);
+            // }
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollback();
+            $data['status'] = 317;
+            $data['error'] = $th;
+            return json_encode($data);
+        }
+
+        $data['oh'] = $oh_create;
+        $data['ol'] = $ol_create;
+        $data['op'] = $op_create;
+        if ($sale->code != 'CHL') {
+            $data['ciinfo_db'] = isset($ciinfo_db) ? $ciinfo_db : '';
+            $data['ciinfocomp_db'] = isset($ciinfocomp_db) ? $ciinfocomp_db : '';
+            $data['ciinfoenvio_db'] = isset($ciinfoenvio_db) ? $ciinfoenvio_db : '';
+        } else {
+            try {
+                $conection = DB::connection('170');
+                $response = $conection->select("SET NOCOUNT ON; EXEC NIKKENREG_STG.dbo.sp_ins_orderNumIntoMQ 'WEB-$sale->code-$sale->id';");
+                DB::disconnect('170');
+            } catch (\Throwable $th) {
+                $data['error'] = $th;
+            }
+        }
+        // $data['sales_update'] = isset($sales_update) ? $sales_update : '';
 
         return json_encode($data);
     }
@@ -950,25 +837,25 @@ class ApiVentasController extends Controller
 
     public function get_warehouses()
     {
-        // $key = sprintf('getWHs');
-        // $timeCaching = 21600; #in seconds 21600 = 6 horas        
-        // return cache()->remember(
-        //     $key,
-        //     $timeCaching,
-        //     static function () {
-        $warehouse = [];
-        $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
-        try {
-            $response =  Warehouses::all();
-        } catch (\Throwable $th) {
-            return 0;
-        }
-        foreach ($response as $war) {
-            $warehouse[$countrys[trim($war->idcountry)]] = $war;
-        }
-        return $warehouse;
-        //     }
-        // );
+        $key = sprintf('getWHs');
+        $timeCaching = 21600; #in seconds 21600 = 6 horas        
+        return cache()->remember(
+            $key,
+            $timeCaching,
+            static function () {
+                $warehouse = [];
+                $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
+                try {
+                    $response =  Warehouses::all();
+                } catch (\Throwable $th) {
+                    return 0;
+                }
+                foreach ($response as $war) {
+                    $warehouse[$countrys[trim($war->idcountry)]] = $war;
+                }
+                return $warehouse;
+            }
+        );
     }
 
     public function get_CIState($department)
@@ -1285,9 +1172,9 @@ class ApiVentasController extends Controller
                     'NumAtCard' => trim($NumAtCard),
                     'ItemCode' => '5031',
                     'Quantity' => 1,
-                    'UnitPrice' => $sale->code == 'COL' ? 0.01 : 0,
+                    'UnitPrice' =>  0,
                     'U_Descto' => 0,
-                    'PriceAfVat' => $tvrepdom == 1 ? 0 :  0.1,
+                    'PriceAfVat' =>  0,
                     'TaxCode' =>  $tvrepdom == 1 ? trim($taxcodes->SalesExeTaxCode) : $taxcodes->SalesTaxCode,
                     'U_ItemType' => 'Venta',
                     'WarehouseCode' => $warehouses->SalesWhsCode,
@@ -1344,9 +1231,6 @@ class ApiVentasController extends Controller
         $salecode = $tvrepdom == 1 ? 'DOM' : $sale->code;
         $NumAtCard = $autoship == 1 ? 'WEB-AUTOSHIP-' . $salecode . '-' . $sale->id : 'WEB-' . $salecode . '-' . $sale->id;
         // Prueba OP
-
-        $installments = preg_replace('/[^0-9]/', '', $payment->installments);
-        if ($installments == 0) $installments = 1;
         switch ($sale->country_id) {
             case 1:
                 $data_payment_col = $this->get_payment_col($payment);
@@ -1365,8 +1249,7 @@ class ApiVentasController extends Controller
                             'PaymentVoucherNum' => trim($payment->sale_id),
                             'PaymentMethodCode' => trim($data_payment_col['payment']->payment_method_code),
                             'PaymentTransferDate' => trim($fecha_actual->format('Y-m-d')),
-                            'PaymentTransferReference' => trim($payment->sale_id),
-                            'PaymentMonths' => $installments
+                            'PaymentTransferReference' => trim($payment->sale_id)
                         ];
                         if ($bono == 1) {
                             $op_bono = [
@@ -1420,8 +1303,7 @@ class ApiVentasController extends Controller
                             'PaymentVoucherNum' => trim($payment->confirmation_code),
                             'PaymentMethodCode' => trim($data_payment_mex['payment']->payment_method_code),
                             'PaymentTransferDate' => trim($fecha_actual->format('Y-m-d')),
-                            'PaymentTransferReference' => trim($payment->confirmation_code),
-                            'PaymentMonths' => $installments
+                            'PaymentTransferReference' => trim($payment->confirmation_code)
                         ];
                         if ($bono == 1) {
                             $op_bono = [
@@ -1475,8 +1357,7 @@ class ApiVentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => $data_payment_per['payment']->payment_method_code,
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => $payment->confirmation_code,
-                            'PaymentMonths' => $installments
+                            'PaymentTransferReference' => $payment->confirmation_code
                         ];
                         if ($bono == 1) {
                             $op_bono = [
@@ -1528,8 +1409,7 @@ class ApiVentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => $data_payment_ecu['payment']->payment_method_code,
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => $payment->confirmation_code,
-                            'PaymentMonths' => $installments
+                            'PaymentTransferReference' => $payment->confirmation_code
                         ];
                         if ($bono == 1) {
                             $op_bono = [
@@ -1580,8 +1460,7 @@ class ApiVentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => '1',
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => $payment->confirmation_code,
-                            'PaymentMonths' => $installments
+                            'PaymentTransferReference' => $payment->confirmation_code
                         ];
                         if ($bono == 1) {
                             $op_bono = [
@@ -1633,8 +1512,7 @@ class ApiVentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => '1',
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => $payment->confirmation_code,
-                            'PaymentMonths' => $installments
+                            'PaymentTransferReference' => $payment->confirmation_code
                         ];
                         if ($bono == 1) {
                             $op = [
@@ -1686,8 +1564,7 @@ class ApiVentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => '1',
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => $payment->confirmation_code,
-                            'PaymentMonths' => $installments
+                            'PaymentTransferReference' => $payment->confirmation_code
                         ];
                         if ($bono == 1) {
                             $op = [
@@ -1736,11 +1613,10 @@ class ApiVentasController extends Controller
                             'PaymentCreditCardNo' => '1234',
                             'PaymentValidUntil' => $fecha_until,
                             'PaymentAmountDue' => $payment->payment_amount,
-                            'PaymentVoucherNum' => $payment->confirmation_code,
+                            'PaymentVoucherNum' => substr($payment->confirmation_code, 0, 11),
                             'PaymentMethodCode' => '1',
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => $payment->confirmation_code,
-                            'PaymentMonths' => $installments
+                            'PaymentTransferReference' => substr($payment->confirmation_code, 0, 11)
                         ];
                         if ($bono == 1) {
                             $op = [
@@ -1793,7 +1669,6 @@ class ApiVentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => '1',
                             'PaymentValidUntil' => $fecha_until,
-                            // 'PaymentMonths' => $installments
                         ];
 
                         if ($bono == 1) {
@@ -2361,7 +2236,6 @@ class ApiVentasController extends Controller
                     $dni_number = $contracts->number_document;
                     $regimen = $contracts->type_incorporate == 1 ? 'RT' : 'CJ';
                     $number_account = trim($contracts->number_account);
-                    $identificacion = $contracts->type_document;
                     break;
                 default:
                     $dni_route = '';
@@ -2430,8 +2304,7 @@ class ApiVentasController extends Controller
                     'AccountType' => (intval($contracts->country) === 5) ? $AccountTypePan[trim($contracts->type_account)] : trim($contracts->type_account),
                     'AccountNumber' => $number_account,
                     'InterAccNumber' => '',
-                    // 'Identificacion' => $contracts->country == 8 ? '01' : $identificacion,
-                    'Identificacion' => $identificacion,
+                    'Identificacion' => $contracts->country == 8 ? '01' : $identificacion,
                     'Req_Factura' => $contracts->cfdi,
                     'CotitName' => $contracts->name_cotitular,
                     'CotitDNIType' => $contracts->type_document_cotitular == 0 ? '' : $contracts->type_document_cotitular,
@@ -2506,7 +2379,7 @@ class ApiVentasController extends Controller
                     'AccountType' => trim($user_bono->type_account),
                     'AccountNumber' => $number_account,
                     'InterAccNumber' => '',
-                    'Identificacion' => $contracts->country == 8 ? '01' : $identificacion,
+                    'Identificacion' => $user_bono->country == 8 ? '01' : $identificacion,
                     'Req_Factura' => $user_bono->cfdi,
                     'CotitName' => $user_bono->name_cotitular,
                     'CotitDNIType' => $user_bono->type_document_cotitular == 0 ? '' : $user_bono->type_document_cotitular,
@@ -2635,6 +2508,7 @@ class ApiVentasController extends Controller
                     'BankCode' => '',
                     'AccountType' => '',
                     'AccountNumber' => ''
+
                 ];
                 break;
 
@@ -2730,7 +2604,6 @@ class ApiVentasController extends Controller
 
     public function get_ciinfoenvio($user, $address_logbook, $CIState, $bono, $user_bono, $tvrepdom, $contracts)
     {
-        //Sólo para México
         $data['status'] = 300;
         try {
             if ($tvrepdom == 1) {
@@ -3095,7 +2968,7 @@ class ApiVentasController extends Controller
             return $data;
         }
         $countrys = ['tst', 'COL', 'MEX', 'PER', 'ECU', 'PAN', 'GTM', 'SLV', 'CRI', 'USA', 'CHL'];
-        // // $date_actual = new DateTime("now", $utc_timezone);
+        // $date_actual = ;
         $utc_timezone = new DateTimeZone("America/Mexico_City");
         $date_actual = new DateTime("now", $utc_timezone);
         if ($contracts->type_incorporate == 1) {
@@ -3199,6 +3072,7 @@ class ApiVentasController extends Controller
                 'Cardtype' => $bplatam->Groupcode == '111' ? 'CB' : 'AB',
                 'CreateDate' => trim($bplatam->CreateDate),
                 'CardFirstName' => trim($bplatam->CardFirstName),
+                'CardLastName' => trim($bplatam->CardLastName),
                 'CardCountry' => trim($bplatam->CardCountry),
                 'BirthDay' => trim($bplatam->BirthDay),
                 'Phone1' => trim($bplatam->Phone1),
@@ -3364,7 +3238,7 @@ class ApiVentasController extends Controller
                     'CardCountry' => $countrys[$user_bono->country],
                     'OrderCountry' => 'CHL',
                     'CreateDate' => $fecha_actual,
-                    'IdRegimen' => $user_bono->type_incorporate == 1 ? 'TPN' : 'TPJ',
+                    'IdRegimen' => $contracts->type_incorporate == 1 ? 'TPN' : 'TPJ',
                     'FederalTaxId' => trim($user_bono->number_document),
                     'CardIdCode' => '',
                     'CardIdnum' => 'RUT',
@@ -3479,7 +3353,7 @@ class ApiVentasController extends Controller
     {
         $data['status'] = 300;
         try {
-            $info = Countrys::where('idcountry', 10)->first();
+            $info = countrys::where('idcountry', 10)->first();
         } catch (\Throwable $th) {
             $data['error_info'] = substr($th, 0, 200);
             return $data;
