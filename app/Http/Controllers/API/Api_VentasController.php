@@ -1679,7 +1679,7 @@ class Api_VentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => '1',
                             'PaymentValidUntil' => $fecha_until,
-                            // 'PaymentMonths' => $installments
+                            'PaymentMonths' => $installments
                         ];
 
                         if ($bono == 1) {
