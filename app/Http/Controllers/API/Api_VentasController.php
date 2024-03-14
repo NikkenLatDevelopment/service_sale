@@ -1230,6 +1230,8 @@ class Api_VentasController extends Controller
         $fecha_until = $fecha->format('Y-m-d');
         $salecode = $tvrepdom == 1 ? 'DOM' : $sale->code;
         $NumAtCard = $autoship == 1 ? 'WEB-AUTOSHIP-' . $salecode . '-' . $sale->id : 'WEB-' . $salecode . '-' . $sale->id;
+        $installments = preg_replace('/[^0-9]/', '', $payment->installments);
+        if ($installments == 0) $installments = 1;
         // Prueba OP
         switch ($sale->country_id) {
             case 1:
