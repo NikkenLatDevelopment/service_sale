@@ -1249,7 +1249,8 @@ class Api_VentasController extends Controller
                             'PaymentVoucherNum' => trim($payment->sale_id),
                             'PaymentMethodCode' => trim($data_payment_col['payment']->payment_method_code),
                             'PaymentTransferDate' => trim($fecha_actual->format('Y-m-d')),
-                            'PaymentTransferReference' => trim($payment->sale_id)
+                            'PaymentTransferReference' => trim($payment->sale_id),
+                            'PaymentMonths' => $installments
                         ];
                         if ($bono == 1) {
                             $op_bono = [
@@ -1303,7 +1304,8 @@ class Api_VentasController extends Controller
                             'PaymentVoucherNum' => trim($payment->confirmation_code),
                             'PaymentMethodCode' => trim($data_payment_mex['payment']->payment_method_code),
                             'PaymentTransferDate' => trim($fecha_actual->format('Y-m-d')),
-                            'PaymentTransferReference' => trim($payment->confirmation_code)
+                            'PaymentTransferReference' => trim($payment->confirmation_code),
+                            'PaymentMonths' => $installments
                         ];
                         if ($bono == 1) {
                             $op_bono = [
@@ -1357,7 +1359,8 @@ class Api_VentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => $data_payment_per['payment']->payment_method_code,
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => $payment->confirmation_code
+                            'PaymentTransferReference' => $payment->confirmation_code,
+                            'PaymentMonths' => $installments
                         ];
                         if ($bono == 1) {
                             $op_bono = [
@@ -1409,7 +1412,8 @@ class Api_VentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => $data_payment_ecu['payment']->payment_method_code,
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => $payment->confirmation_code
+                            'PaymentTransferReference' => $payment->confirmation_code,
+                            'PaymentMonths' => $installments
                         ];
                         if ($bono == 1) {
                             $op_bono = [
@@ -1460,7 +1464,8 @@ class Api_VentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => '1',
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => $payment->confirmation_code
+                            'PaymentTransferReference' => $payment->confirmation_code,
+                            'PaymentMonths' => $installments
                         ];
                         if ($bono == 1) {
                             $op_bono = [
@@ -1512,7 +1517,8 @@ class Api_VentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => '1',
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => $payment->confirmation_code
+                            'PaymentTransferReference' => $payment->confirmation_code,
+                            'PaymentMonths' => $installments
                         ];
                         if ($bono == 1) {
                             $op = [
@@ -1564,7 +1570,8 @@ class Api_VentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => '1',
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => $payment->confirmation_code
+                            'PaymentTransferReference' => $payment->confirmation_code,
+                            'PaymentMonths' => $installments
                         ];
                         if ($bono == 1) {
                             $op = [
@@ -1616,7 +1623,8 @@ class Api_VentasController extends Controller
                             'PaymentVoucherNum' => substr($payment->confirmation_code, 0, 11),
                             'PaymentMethodCode' => '1',
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
-                            'PaymentTransferReference' => substr($payment->confirmation_code, 0, 11)
+                            'PaymentTransferReference' => substr($payment->confirmation_code, 0, 11),
+                            'PaymentMonths' => $installments
                         ];
                         if ($bono == 1) {
                             $op = [
@@ -1669,6 +1677,7 @@ class Api_VentasController extends Controller
                             'PaymentVoucherNum' => $payment->confirmation_code,
                             'PaymentMethodCode' => '1',
                             'PaymentValidUntil' => $fecha_until,
+                            // 'PaymentMonths' => $installments
                         ];
 
                         if ($bono == 1) {
