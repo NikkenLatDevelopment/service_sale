@@ -2247,6 +2247,21 @@ class Api_VentasController extends Controller
                     $dni_number = $contracts->number_document;
                     $regimen = $contracts->type_incorporate == 1 ? 'RT' : 'CJ';
                     $number_account = trim($contracts->number_account);
+                    $identificacion = intval($contracts->type_document);
+                    switch($identificacion){
+                        case 10: 
+                            $identificacion = "01";
+                            break;
+                        case 40: 
+                            $identificacion = "02";
+                            break;
+                        case 21: 
+                            $identificacion = "03";
+                            break;
+                        default:
+                            $identificacion = "01";
+                            break;
+                    }
                     break;
                 default:
                     $dni_route = '';
@@ -2315,7 +2330,8 @@ class Api_VentasController extends Controller
                     'AccountType' => (intval($contracts->country) === 5) ? $AccountTypePan[trim($contracts->type_account)] : trim($contracts->type_account),
                     'AccountNumber' => $number_account,
                     'InterAccNumber' => '',
-                    'Identificacion' => $contracts->country == 8 ? '01' : $identificacion,
+                    // 'Identificacion' => $contracts->country == 8 ? '01' : $identificacion,
+                    'Identificacion' => $identificacion,
                     'Req_Factura' => $contracts->cfdi,
                     'CotitName' => $contracts->name_cotitular,
                     'CotitDNIType' => $contracts->type_document_cotitular == 0 ? '' : $contracts->type_document_cotitular,
