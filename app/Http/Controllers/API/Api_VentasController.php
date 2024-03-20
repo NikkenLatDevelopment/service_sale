@@ -1143,6 +1143,20 @@ class Api_VentasController extends Controller
                     }
                 }
                 if ($tvrepdom == 1) $iva = 0;
+                
+                ## obtiene el WholePrice para STGN
+                $WholePrice = '';
+                $conection = \DB::connection('mysqlTV');
+                    $data = $conection->select("SELECT (wp.wholesale_price + wp.wholesale_tax) AS WholePrice, wp.wholesale_price, wp.wholesale_tax
+                    FROM warehouses_products wp 
+                    INNER JOIN products p ON p.id = wp.product_id
+                    WHERE p.sku IN ('" . $product->sku .  "')
+                    AND wp.country_id = " . $sale->country_id);
+                \DB::disconnect('mysqlTV');
+                if(sizeof($data) > 0){
+                    $WholePrice = intval($data[0]->WholePrice) * intval($product->quantity);
+                }
+
                 $lines[] = [
                     'DocEntry' => trim($sale->id),
                     'NumAtCard' => trim($NumAtCard),
@@ -1162,7 +1176,9 @@ class Api_VentasController extends Controller
                     'ExtraTax' => trim($product->extra_perception_total),
                     'Estrategia' => $nikkenpoints == 1 ? 'Nikkenpoints' : $estrategia,
                     'Garantia' => $warranty,
-                    'Fecha_Estrategia' => $fecha_inicial_estrategia != '' ? $fecha_inicial_estrategia : null
+                    'Fecha_Estrategia' => $fecha_inicial_estrategia != '' ? $fecha_inicial_estrategia : null,
+                    
+                    'WholePrice' => $WholePrice,
 
                 ];
             }
@@ -2859,6 +2875,20 @@ class Api_VentasController extends Controller
                 if ($product->tax != 0) {
                     $iva = 1;
                 }
+
+                ## obtiene el WholePrice para STGN
+                $WholePrice = '';
+                $conection = \DB::connection('mysqlTV');
+                    $data = $conection->select("SELECT (wp.wholesale_price + wp.wholesale_tax) AS WholePrice, wp.wholesale_price, wp.wholesale_tax
+                    FROM warehouses_products wp 
+                    INNER JOIN products p ON p.id = wp.product_id
+                    WHERE p.sku IN ('" . $product->sku .  "')
+                    AND wp.country_id = " . $sale->country_id);
+                \DB::disconnect('mysqlTV');
+                if(sizeof($data) > 0){
+                    $WholePrice = intval($data[0]->WholePrice) * intval($product->quantity);
+                }
+
                 $lines[] = [
                     'DocEntry' => trim($sale->id),
                     'NumAtCard' => trim($NumAtCard),
@@ -2876,7 +2906,9 @@ class Api_VentasController extends Controller
                     'Descto' => trim($product->discount),
                     'Linetotal' => floor(trim($product->price)),
                     'LineAfVat' => floor(trim($product->unit_price_with_tax)),
-                    'ExtraTax' => trim($product->extra_perception_total)
+                    'ExtraTax' => trim($product->extra_perception_total),
+                    
+                    'WholePrice' => $WholePrice,
                 ];
             }
             if ($incorporacion == 1 && $user->client_type == 'CLUB') {
