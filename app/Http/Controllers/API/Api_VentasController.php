@@ -1201,6 +1201,7 @@ class Api_VentasController extends Controller
                     'U_vol_calc' => 0,
                     'U_Flete_incluido' => $sale->code == 'MEX' ? 17.50 : 0,
                     'ExtraTax' => 0,
+                    'WholePrice' => 0
                 ];
             }
             if ($bono == 1) {
@@ -1221,7 +1222,8 @@ class Api_VentasController extends Controller
                     'U_vol_calc' => 0,
                     'U_Flete_incluido' => 0,
                     'ExtraTax' => 0,
-                    'Fecha_Estrategia' => trim($docdate->format('Y-m-d'))
+                    'Fecha_Estrategia' => trim($docdate->format('Y-m-d')),
+                    'WholePrice' => 0
                 ];
             }
         } catch (\Throwable $th) {
