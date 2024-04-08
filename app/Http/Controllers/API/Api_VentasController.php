@@ -635,6 +635,7 @@ class Api_VentasController extends Controller
                     $data['businesspartnerAddress_create'] = BusinessPartnerAddress::create($businesspartneraddress);
                     $data['businesspartnerTaxInfo_create'] = BusinessPartnerTaxInfo::create($businesspartnertaxinfo);
                     $data['businesspartnerAccInfo_create'] = BusinessPartnerAccInfo::create($businesspartneraccinfo);
+                    $data['control_ci_update'] = Control_CI::where('codigo', $user->sap_code)->limit(1)->update(['estatus' => 1, 'b4' => 7, 'b9' => 0]);
                 } else {
                     $ciinfo_db = CIINFO::create($ciinfo);
                     $ciinfocomp_db = CIINFOCOMP::create($ciinfocomp);
