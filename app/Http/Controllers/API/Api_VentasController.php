@@ -2154,7 +2154,8 @@ class Api_VentasController extends Controller
                 'CreateVista' => null,
                 'CreateMN' => null,
                 'CmpPrivate' => $contracts->type_incorporate == 0 ? 'C' : 'I',
-                'OrigenCI' => null
+                'OrigenCI' => $contracts->country == 8 ? 1 : null,
+                // 'OrigenCI' => null
             ];
             if ($bono == 1) {
                 if ($user_bono->type_incorporate == 1) {
@@ -2192,7 +2193,8 @@ class Api_VentasController extends Controller
                     'CreateVista' => null,
                     'CreateMN' => null,
                     'CmpPrivate' => $user_bono->type_incorporate == 0 ? 'C' : 'I',
-                    'OrigenCI' => null
+                    'OrigenCI' => $contracts->country == 8 ? 1 : null,
+                    // 'OrigenCI' => null
                 ];
             }
         } catch (\Throwable $th) {
