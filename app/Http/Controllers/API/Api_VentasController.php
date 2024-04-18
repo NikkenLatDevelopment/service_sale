@@ -1649,7 +1649,7 @@ class Api_VentasController extends Controller
                             'PaymentMonths' => $installments
                         ];
                         if ($bono == 1) {
-                            $op = [
+                            $op_bono = [
                                 'DocEntry' => '55' . trim($sale->id),
                                 'NumAtCard' => trim($NumAtCard) . '_B',
                                 'PaymentType' => 'TP',
