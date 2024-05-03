@@ -298,7 +298,7 @@ class Api_VentasController extends Controller
         // $incorporacion = 1;
         // return $incorporacion;
         //Validar bono con propósito
-        $items_bono = ['5023', '5024', '5027'];
+        $items_bono = ['5023', '5024', '5027', '50234', '50244', '50274'];
         $bono = 0;
         $user_bono = '';
         $qty = 0;
