@@ -1484,7 +1484,7 @@ class Api_VentasController extends Controller
                             'PaymentValidUntil' => $fecha_until,
                             'PaymentAmountDue' => $payment->payment_amount,
                             'PaymentVoucherNum' => $payment->confirmation_code,
-                            'PaymentMethodCode' => '1',
+                            'PaymentMethodCode' => $data_payment_pan['payment']->payment_method_code,
                             'PaymentTransferDate' => $fecha_actual->format('Y-m-d'),
                             'PaymentTransferReference' => $payment->confirmation_code,
                             'PaymentMonths' => $installments
