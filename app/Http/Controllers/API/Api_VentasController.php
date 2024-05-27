@@ -2223,12 +2223,29 @@ class Api_VentasController extends Controller
             $number_account = '';
             $identificacion = '';
             $type_ident = ['1' => 'Cédula de Ciudadania', '2' => 'Cédula de Extranjería', '12' => 'Régimen Común', '13' => 'Régimen Simplificado'];
+            
+            $DNItypeSTGN = [
+                1 => 13,
+                2 => 22,
+                3 => 31,
+                '' => '',
+                13 => 13,
+            ];
+    
+            $RegimenSGTN = [
+                12 => 'RC',
+                13 => 'RS',
+                14 => 'RSimple',
+                '' => '',
+            ];
+
             switch (intval($contracts->country)) {
                 case 1:
-                    $regimen = $contracts->type_incorporate == 1 ? 'RS' : 'RC';
+                    $regimen = $contracts->type_incorporate == 1 ? 'RS' : $RegimenSGTN[$contracts->type_document];
                     $dni_number = $contracts->number_document;
                     $number_account = $contracts->number_account;
                     $identificacion = isset($type_ident[$contracts->number_document]) ? $type_ident($contracts->number_document) : '';
+                    $dni_type = $DNItypeSTGN[$contracts->type_document];
                     break;
                 case 2:
                     $dni_route = $contracts->regimen;
